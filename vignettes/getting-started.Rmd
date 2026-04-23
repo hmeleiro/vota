@@ -1,0 +1,177 @@
+---
+title: "Getting Started with vota"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with vota}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+**vota** is an R package for simulating Spanish electoral outcomes. Starting from national survey data (transfer matrices), it projects vote intentions to provincial seat assignments using the D'Hondt method -- the same allocation system used in Spanish elections.
+
+This vignette walks you through the basic setup and a minimal simulation using the package's included datasets.
+
+## Installation
+
+```{r eval=FALSE}
+# Install from GitHub
+devtools::install_github("hmeleiro/vota")
+```
+
+```{r}
+library(vota)
+```
+
+## Included Datasets
+
+The package includes real data from the Spanish general elections of July 23, 2023. These datasets serve as both examples and ready-to-use inputs:
+
+### Transfer Matrix (`mt`)
+
+The transfer matrix captures how voters from the last election intend to vote now. Each row represents a combination of past party recall (`recuerdo`) and current vote intention (`idv`), along with the percentage transferring between them.
+
+```{r}
+data(mt)
+head(mt)
+```
+
+### Previous Election Results (`votos_23J`)
+
+Official vote totals from the 23J election, used as the base for demographic adjustments and voter redistribution.
+
+```{r}
+data(votos_23J)
+votos_23J
+```
+
+### Provincial Voting Patterns (`patrones_23J`)
+
+Historical voting distributions by province, used to project national estimates to the provincial level.
+
+```{r}
+data(patrones_23J)
+head(patrones_23J)
+```
+
+### Seats per Province (`n_seats`)
+
+The number of Congressional seats allocated to each of Spain's 52 electoral districts.
+
+```{r}
+data(n_seats)
+head(n_seats)
+```
+
+### Manual Adjustments (`retoques`)
+
+Optional expert adjustments -- add or subtract votes from specific parties based on external knowledge.
+
+```{r}
+data(retoques)
+retoques
+```
+
+### Small Parties (`small_parties`)
+
+Vote estimates for parties too small to model in the transfer matrix but relevant for the overall picture.
+
+```{r}
+data(small_parties)
+small_parties
+```
+
+## Setting Up a Project
+
+The easiest way to start a simulation is to scaffold a project directory:
+
+```{r eval=FALSE}
+setup_electoral_project("my_simulation_2024")
+```
+
+This creates:
+
+- `input/input.xlsx` -- An Excel template pre-filled with example data
+- `output/` -- Directory for simulation results
+- `scripts/main.R` -- A starter script
+
+Alternatively, generate just the Excel template:
+
+```{r eval=FALSE}
+create_input_template("input/input.xlsx")
+```
+
+## Running a Simulation
+
+Once you have your input data in an Excel file, run the full pipeline with `run_vota()`:
+
+```{r eval=FALSE}
+results <- run_vota(
+  input_path = "input/input.xlsx",
+  output_file = "output/results.rds",
+  uncertainty_method = "mcmc",
+  nsims = 100,
+  factor_correccion_abstencion = 3,
+  factor_correccion_jovenes = 2.5,
+  factor_correccion_otbl = 2.5,
+  tiempo_entre_elecciones = 0.1,
+  tau = 300,
+  umbral = 0.03,
+  seed = 42,
+  verbose = TRUE
+)
+```
+
+The function returns an `electo_fit` object containing:
+
+- **`estimacion`** -- National estimates with confidence intervals (vote % and seats)
+- **`estimacion_sims`** -- All simulation results
+- **`estimacion_provincias_sims`** -- Provincial-level simulation results
+- **`dhondt_output`** -- Detailed D'Hondt allocation
+- **`mt_sims_pct`** / **`mt_sims_electores`** -- Transfer matrix simulations
+- **`participacion_media`** -- Estimated mean turnout
+- **`metadata`** -- Execution parameters
+
+## Inspecting Results
+
+```{r eval=FALSE}
+# Quick overview
+print(results)
+
+# Detailed summary with win probabilities
+summary(results)
+
+# Access the national estimates table
+results$estimacion
+```
+
+## Visualizing Results
+
+The `electo_fit` object has a dedicated `plot()` method with four visualization types:
+
+```{r eval=FALSE}
+# National vote shares with confidence intervals
+plot(results, "nacional")
+
+# Distribution of seats across simulations (by party)
+plot(results, "seats_dist")
+
+# Seats per province for a specific party
+plot(results, "provincia", partido = "PP")
+
+# Seat fragility: margin of last D'Hondt quotient
+plot(results, "dhondt_margin")
+```
+
+## Next Steps
+
+- **[The VOTA Methodology](methodology.html)** -- Understand the five corrections and the statistical model
+- **[Step-by-step Tutorial](tutorial.html)** -- Walk through each function in the pipeline using the internal datasets

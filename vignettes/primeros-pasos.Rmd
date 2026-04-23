@@ -1,0 +1,177 @@
+---
+title: "Primeros pasos con vota"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Primeros pasos con vota}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introducción
+
+**vota** es un paquete de R para simular resultados electorales en España. Partiendo de datos de encuesta nacionales (matrices de transferencia), proyecta las intenciones de voto a asignaciones de escaños provinciales usando el método D'Hondt -- el mismo sistema de reparto utilizado en las elecciones españolas.
+
+Esta viñeta te guía a través de la configuración básica y una simulación mínima usando los datasets incluidos en el paquete.
+
+## Instalación
+
+```{r eval=FALSE}
+# Instalar desde GitHub
+devtools::install_github("hmeleiro/vota")
+```
+
+```{r}
+library(vota)
+```
+
+## Datasets Incluidos
+
+El paquete incluye datos reales de las elecciones generales españolas del 23 de julio de 2023. Estos datasets sirven tanto como ejemplos como entradas listas para usar:
+
+### Matriz de transferencia (`mt`)
+
+La matriz de transferencia captura cómo los votantes de la última elección piensan votar ahora. Cada fila representa una combinación de recuerdo de voto (`recuerdo`) e intención de voto actual (`idv`), junto con el porcentaje de transferencia entre ambos.
+
+```{r}
+data(mt)
+head(mt)
+```
+
+### Resultados de la elección anterior (`votos_23J`)
+
+Totales oficiales de votos de las elecciones 23J, usados como base para los ajustes demográficos y la redistribución de votantes.
+
+```{r}
+data(votos_23J)
+votos_23J
+```
+
+### Patrones de voto provincial (`patrones_23J`)
+
+Distribuciones históricas de voto por provincia, usadas para proyectar estimaciones nacionales al nivel provincial.
+
+```{r}
+data(patrones_23J)
+head(patrones_23J)
+```
+
+### Escaños por provincia (`n_seats`)
+
+El número de escaños al Congreso asignados a cada una de las 52 circunscripciones electorales de España.
+
+```{r}
+data(n_seats)
+head(n_seats)
+```
+
+### Ajustes manuales (`retoques`)
+
+Ajustes discrecionales opcionales -- sumar o restar votos a partidos específicos basándose en conocimiento externo.
+
+```{r}
+data(retoques)
+retoques
+```
+
+### Partidos pequeños (`small_parties`)
+
+Estimaciones de voto para partidos demasiado pequeños para modelar en la matriz de transferencia pero relevantes para el resultado global.
+
+```{r}
+data(small_parties)
+small_parties
+```
+
+## Crear un Proyecto
+
+La forma más fácil de iniciar una simulación es crear una estructura de proyecto:
+
+```{r eval=FALSE}
+setup_electoral_project("mi_simulacion_2024")
+```
+
+Esto crea:
+
+- `input/input.xlsx` -- Una plantilla Excel pre-rellenada con datos de ejemplo
+- `output/` -- Directorio para los resultados de la simulación
+- `scripts/main.R` -- Un script de inicio
+
+Alternativamente, puedes generar solo la plantilla Excel:
+
+```{r eval=FALSE}
+create_input_template("input/input.xlsx")
+```
+
+## Ejecutar una Simulación
+
+Una vez que tengas tus datos de entrada en un archivo Excel, ejecuta el pipeline completo con `run_vota()`:
+
+```{r eval=FALSE}
+resultados <- run_vota(
+  input_path = "input/input.xlsx",
+  output_file = "output/resultados.rds",
+  uncertainty_method = "mcmc",
+  nsims = 100,
+  factor_correccion_abstencion = 3,
+  factor_correccion_jovenes = 2.5,
+  factor_correccion_otbl = 2.5,
+  tiempo_entre_elecciones = 0.1,
+  tau = 300,
+  umbral = 0.03,
+  seed = 42,
+  verbose = TRUE
+)
+```
+
+La función devuelve un objeto `electo_fit` que contiene:
+
+- **`estimacion`** -- Estimaciones nacionales con intervalos de confianza (% de voto y escaños)
+- **`estimacion_sims`** -- Todos los resultados de simulación
+- **`estimacion_provincias_sims`** -- Resultados de simulación a nivel provincial
+- **`dhondt_output`** -- Asignación detallada de D'Hondt
+- **`mt_sims_pct`** / **`mt_sims_electores`** -- Simulaciones de la matriz de transferencia
+- **`participacion_media`** -- Participación media estimada
+- **`metadata`** -- Parámetros de ejecución
+
+## Inspeccionar Resultados
+
+```{r eval=FALSE}
+# Vista rápida
+print(resultados)
+
+# Resumen detallado con probabilidades de victoria
+summary(resultados)
+
+# Acceder a la tabla de estimaciones nacionales
+resultados$estimacion
+```
+
+## Visualizar Resultados
+
+El objeto `electo_fit` tiene un método `plot()` dedicado con cuatro tipos de visualización:
+
+```{r eval=FALSE}
+# Porcentajes de voto nacionales con intervalos de confianza
+plot(resultados, "nacional")
+
+# Distribución de escaños en las simulaciones (por partido)
+plot(resultados, "seats_dist")
+
+# Escaños por provincia para un partido específico
+plot(resultados, "provincia", partido = "PP")
+
+# Fragilidad de escaños: margen del último cociente D'Hondt
+plot(resultados, "dhondt_margin")
+```
+
+## Siguientes Pasos
+
+- **[Metodología VOTA](metodologia.html)** -- Entiende las cinco correcciones y el modelo estadístico
+- **[Tutorial paso a paso](tutorial-es.html)** -- Recorre cada función del pipeline usando los datasets internos

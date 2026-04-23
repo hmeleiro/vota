@@ -1,0 +1,41 @@
+Package: vota
+Type: Package
+Title: Sistema de Simulación Electoral Español
+Version: 0.1.0
+Authors@R: person("Héctor Meleiro", email = "hmeleiros@gmail.com", role = c("aut", "cre"))
+Description: Sistema de simulación electoral para proyectar datos de encuestas 
+    nacionales a asignaciones de escaños provinciales utilizando matrices de 
+    transferencia, métodos Monte Carlo y bootstrapping. Implementa el algoritmo 
+    VOTA (Vote Outcome Transfer-based Algorithm), específicamente diseñado para 
+    el sistema electoral español con mÃ©todo D'Hondt.
+License: GPL (>= 3)
+URL: https://vota.spainelectoralproject.com/
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends: 
+    R (>= 4.0.0)
+Imports:
+    readxl,
+    dplyr,
+    tidyr,
+    purrr,
+    magrittr,
+    openxlsx,
+    rlang,
+    stats,
+    utils,
+    gtools, 
+    survey,
+    ggplot2,
+    httr,
+    rvest
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    pkgdown,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Config/Needs/website: hmeleiro/spainelectoraltheme

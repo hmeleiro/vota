@@ -1,0 +1,90 @@
+url: https://vota.spainelectoralproject.com/
+
+template:
+  package: spainelectoraltheme
+  bootstrap: 5
+
+lang: es
+
+navbar:
+  structure:
+    left: [intro, reference, articles]
+    right: [search, github]
+  components:
+    github:
+      icon: fa-github
+      href: https://vota.spainelectoralproject.com/
+      aria-label: GitHub
+
+reference:
+  - title: Pipeline principal
+    desc: Funciones para ejecutar la simulación completa.
+    contents:
+      - run_vota
+      - vota
+      - load_and_validate
+      - validate_input_data
+  - title: Simulación Monte Carlo
+    desc: Funciones de simulación y muestreo.
+    contents:
+      - simulate_mt
+      - simulate_prov_votes
+      - draw_mt
+  - title: D'Hondt y escaños
+    desc: Asignación de escaños y agregación.
+    contents:
+      - fast_dhondt
+      - allocate_seats
+      - aggregate_results
+      - calculate_n
+  - title: Datos de entrada
+    desc: Lectura y preparación de datos.
+    contents:
+      - read_mt
+      - read_partidos
+      - read_patrones
+      - get_censo
+  - title: Utilidades
+    desc: Herramientas auxiliares y plantillas.
+    contents:
+      - setup_electoral_project
+      - create_vota_project
+      - create_input_template
+  - title: Clases S3
+    desc: Objeto de resultados y métodos asociados.
+    contents:
+      - new_electo_fit
+      - print.electo_fit
+      - print.summary_electo_fit
+      - summary.electo_fit
+      - plot.electo_fit
+  - title: Conjuntos de datos
+    desc: Datos incluidos en el paquete.
+    contents:
+      - mt
+      - n_seats
+      - patrones_23J
+      - retoques
+      - small_parties
+      - votos_23J
+
+repo:
+  url:
+    home: https://github.com/hmeleiro/vota
+    issue: https://github.com/hmeleiro/vota/issues
+    user: https://github.com/hmeleiro
+
+home:
+  links:
+    - text: Report a bug
+      href: https://github.com/hmeleiro/vota/issues
+  sidebar:
+    structure: [links, license, authors, dev]
+
+footer:
+  structure:
+    left: [developed_by, sep_branding]
+    right: [license, built_with]
+  components:
+    license: >
+      Licenciado bajo <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener">GPL-3</a>.

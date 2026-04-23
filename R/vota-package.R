@@ -1,0 +1,73 @@
+#' @title vota: Vote Outcome Transfer-based Algorithm
+#' @description
+#' The vota package implements the VOTA (Vote Outcome Transfer-based Algorithm)
+#' for simulating Spanish electoral outcomes using transfer matrices and Monte
+#' Carlo methods. It transforms national survey data into provincial seat
+#' assignments via the D'Hondt method, with built-in corrections for abstention,
+#' new voters, and manual adjustments.
+#'
+#' @section Main Functions:
+#' The core simulation pipeline:
+#' \describe{
+#'   \item{\code{\link{run_vota}}}{Execute complete electoral simulation pipeline}
+#'   \item{\code{\link{vota}}}{Core electoral projection algorithm}
+#'   \item{\code{\link{fast_dhondt}}}{Vectorized D'Hondt seat allocation}
+#' }
+#'
+#' @section Data Processing Functions:
+#' Load, validate and prepare electoral data:
+#' \describe{
+#'   \item{\code{\link{load_and_validate}}}{Load and validate Excel input data}
+#'   \item{\code{\link{validate_input_data}}}{Comprehensive data validation}
+#'   \item{\code{\link{draw_mt}}}{Generate transfer matrix simulations}
+#' }
+#'
+#' @section Project Setup Functions:
+#' Initialize and configure electoral projects:
+#' \describe{
+#'   \item{\code{\link{setup_electoral_project}}}{Create project directory structure}
+#'   \item{\code{\link{create_input_template}}}{Generate Excel template files}
+#' }
+#'
+#' @section Visualization Functions:
+#' Display and format simulation results:
+#' \describe{
+#'   \item{\code{\link{plot.electo_fit}}}{Generate plots from simulation results}
+#' }
+#'
+#' @section Key Features:
+#' \itemize{
+#'   \item Monte Carlo uncertainty quantification
+#'   \item Provincial projection with historical patterns
+#'   \item Demographic corrections (abstention, new voters)
+#'   \item Manual adjustment capabilities
+#'   \item Professional visualization and reporting
+#'   \item Comprehensive input validation
+#' }
+#'
+#' @section Workflow:
+#' A typical electoral simulation workflow:
+#' \enumerate{
+#'   \item Use \code{\link{setup_electoral_project}} to create project structure
+#'   \item Edit the generated Excel template with your data
+#'   \item Run \code{\link{run_vota}} to execute the simulation
+#'   \item Analyze results using \code{\link{plot.electo_fit}} and \code{\link{summary.electo_fit}}
+#' }
+#'
+#' @section Data Requirements:
+#' The package requires an Excel file with specific sheets:
+#' \itemize{
+#'   \item \strong{partidos}: Party codes for recuerdo and IDV
+#'   \item \strong{mt_simplificada}: Transfer matrices with 'N' row
+#'   \item \strong{patrones}: Historical patterns by province
+#'   \item \strong{anteriores_elecciones}: Previous electoral results
+#'   \item \strong{n_diputados}: Seats per province
+#'   \item \strong{retoques}: Manual adjustments (optional)
+#'   \item \strong{small_parties}: Small parties data (optional)
+#' }
+#'
+#' @docType package
+#' @name vota-package
+#' @aliases vota-package
+#' @keywords internal
+"_PACKAGE"

@@ -1,0 +1,16 @@
+.Rproj.user
+vota.Rproj
+.Rhistory
+.RData
+.Ruserdata
+/inst/
+/doc/
+/Meta/
+^data-raw$
+/.github/*
+!/.github/workflows/
+!/.github/workflows/**
+/playground/
+TODO.md
+NAMING_STANDARDIZATION.md
+.positai

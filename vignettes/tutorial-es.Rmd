@@ -1,0 +1,356 @@
+---
+title: "Tutorial paso a paso"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Tutorial paso a paso}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introducción
+
+Este tutorial recorre el pipeline de vota paso a paso, usando únicamente los datasets incluidos en el paquete. En lugar de ejecutar `run_vota()` como una caja negra, llamaremos a cada función individualmente para entender qué ocurre en cada etapa.
+
+```{r}
+library(vota)
+library(dplyr)
+library(tidyr)
+```
+
+## Paso 1: Explorar los Datos Internos
+
+### La Matriz de Transferencia
+
+El dataset `mt` es un ejemplo de matriz de transferencia en formato ancho. Cada fila es un partido de intención de voto (`idv`), y cada columna es un partido de recuerdo de voto anterior. La última fila (`idv == "n"`) proporciona el tamaño de muestra para cada columna (recuerdo de voto).
+
+```{r}
+data(mt)
+mt
+```
+
+Las columnas representan partidos de la elección *anterior* (recuerdo): PSOE, PP, Vox, Sumar, OTBL (otros/blanco) y ABNL (abstención/nulo). La columna `idv` muestra a quién piensan votar ahora estos votantes. Por ejemplo, la fila donde `idv = "PP"` muestra cuántos votantes de cada partido anterior ahora tienen intención de votar PP.
+
+### Resultados de la Elección Anterior
+
+`votos_23J` contiene los votos totales oficiales por partido de las elecciones del 23J 2023:
+
+```{r}
+data(votos_23J)
+votos_23J
+```
+
+Estos totales se usan para convertir los porcentajes de transferencia en recuentos absolutos de votos.
+
+### Patrones Provinciales
+
+`patrones_23J` contiene la cuota histórica de voto de cada partido por provincia (como proporción entre 0 y 1):
+
+```{r}
+data(patrones_23J)
+head(patrones_23J, 12)
+
+# ¿Cuántas provincias y partidos?
+cat("Provincias:", length(unique(patrones_23J$codigo_provincia)), "\n")
+cat("Partidos:", length(unique(patrones_23J$partido)), "\n")
+```
+
+### Escaños por Provincia
+
+```{r}
+data(n_seats)
+head(n_seats)
+cat("Total escaños:", sum(n_seats$n_diputados), "\n")
+```
+
+### Opcional: Ajustes y Partidos Pequeños
+
+```{r}
+data(retoques)
+retoques
+
+data(small_parties)
+small_parties
+```
+
+## Paso 2: Preparar la Matriz de Transferencia
+
+La función `simulate_mt()` necesita la matriz de transferencia en formato largo con columnas `recuerdo`, `idv`, `n` y `pct_original`. Vamos a prepararla desde el dataset `mt` en formato ancho.
+
+```{r}
+# Convertir mt ancha a formato largo
+party_cols <- setdiff(names(mt), c("idv", "n"))
+
+mt_long_raw <- 
+  mt %>%
+  pivot_longer(
+    cols = party_cols,
+    names_to = "recuerdo",
+    values_to = "pct_original"
+  ) 
+
+mt_long <- 
+  mt_long_raw %>% 
+  filter(idv != "N") %>% 
+  left_join(
+    mt_long_raw %>% 
+      filter(idv == "N") %>% 
+      select(recuerdo, n = pct_original), 
+    by = join_by(recuerdo)
+  ) %>%
+  select(recuerdo, idv, n, pct_original)
+
+head(mt_long)
+
+```
+
+La columna `pct_original` contiene el porcentaje de transferencia para cada par recuerdo-idv, y `n` contiene el número de encuestados en esa celda.
+
+## Paso 3: Simular Matrices de Transferencia
+
+Usando `simulate_mt()`, generamos múltiples matrices de transferencia simuladas mediante remuestreo multinomial. Cada simulación extrae de la distribución muestral, creando variabilidad natural.
+
+```{r}
+mt_sims <- simulate_mt(mt_long, nsims = 5, seed = 42)
+
+# sim = 0 es la matriz original (sin perturbar)
+head(mt_sims)
+cat("Número de simulaciones (incluyendo original):", length(unique(mt_sims$sim)), "\n")
+```
+
+Cada simulación (`sim = 1, 2, ...`) es una matriz de transferencia plausible. `sim = 0` es la matriz original observada.
+
+## Paso 4: Ejecutar el Algoritmo VOTA
+
+La función `vota()` toma una única matriz de transferencia (en formato largo con columnas `recuerdo`, `idv`, `transfer`) y devuelve estimaciones nacionales de voto. Ejecutémosla sobre la matriz original (`sim = 0`):
+
+```{r}
+# Obtener la matriz de transferencia original (sim=0)
+mt_original <- mt_sims %>% filter(sim == 0)
+
+resultado <- vota(
+  mt_simplificada = mt_original,
+  tiempo_entre_elecciones = 0.1,
+  factor_correccion_abstencion = 3,
+  factor_correccion_jovenes = 2.5,
+  factor_correccion_otbl = 2.5,
+  retoques = retoques,
+  small_parties = small_parties,
+  votos_ant = votos_23J
+)
+
+# Estimaciones de voto nacionales
+resultado$estimacion %>% 
+  arrange(desc(votos))
+```
+
+La salida es un data frame con los votos estimados por partido (`idv`). Son recuentos absolutos de votos.
+
+Podemos calcular porcentajes de voto:
+
+```{r}
+estimacion <- resultado$estimacion %>%
+  mutate(pct = votos / sum(votos) * 100) %>%
+  arrange(desc(pct))
+
+estimacion
+```
+
+## Paso 5: Ejecutar VOTA en Todas las Simulaciones
+
+Para cuantificar la incertidumbre, ejecutamos `vota()` en cada matriz de transferencia simulada:
+
+```{r}
+todas_estimaciones <- lapply(unique(mt_sims$sim), function(s) {
+  mt_s <- mt_sims %>% filter(sim == s)
+  res <- vota(
+    mt_simplificada = mt_s,
+    tiempo_entre_elecciones = 0.1,
+    factor_correccion_abstencion = 3,
+    factor_correccion_jovenes = 2.5,
+    factor_correccion_otbl = 2.5,
+    retoques = retoques,
+    small_parties = small_parties,
+    votos_ant = votos_23J
+  )
+  res$estimacion %>% mutate(sim = s)
+})
+
+todas_estimaciones <- bind_rows(todas_estimaciones)
+
+# Calcular porcentajes por simulación
+todas_estimaciones <- todas_estimaciones %>%
+  group_by(sim) %>%
+  mutate(pct = votos / sum(votos) * 100) %>%
+  ungroup()
+
+head(todas_estimaciones, n = 20)
+```
+
+Ahora podemos ver cómo varían las estimaciones entre simulaciones:
+
+```{r}
+estadisticos <- todas_estimaciones %>%
+  group_by(idv) %>%
+  summarise(
+    pct_mediana = median(pct),
+    pct_inf = quantile(pct, 0.05),
+    pct_sup = quantile(pct, 0.95),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(pct_mediana))
+
+estadisticos
+```
+
+## Paso 6: Proyección Provincial
+
+Las estimaciones nacionales necesitan distribuirse entre las 52 provincias de España usando patrones históricos de voto. La función `simulate_prov_votes()` hace esto usando una distribución Dirichlet:
+
+```{r}
+# Usar la estimación puntual (sim=0)
+estimacion_nacional <- resultado$estimacion
+
+# Filtrar patrones para incluir solo partidos en nuestra estimación
+partidos_en_estimacion <- estimacion_nacional$idv
+patrones_filtrados <- patrones_23J %>%
+  pivot_longer(
+    all_of(partidos_en_estimacion), 
+    names_to = "idv", 
+    values_to = "patron"
+  ) %>%
+  mutate(patron = patron / 100) %>%
+  filter(patron > 0)
+
+# Simular distribución provincial de votos
+votos_prov <- simulate_prov_votes(
+  patrones = patrones_filtrados,
+  estimacion = estimacion_nacional,
+  method = "dirichlet",
+  tau = 200,
+  seed = 42
+)
+
+# El resultado es una matriz: provincias (filas) x partidos (columnas)
+dim(votos_prov)
+head(votos_prov[, 1:4])
+```
+
+Cada celda contiene el número simulado de votos para ese partido en esa provincia. El parámetro `tau` controla cuánto se ciñe la distribución provincial al patrón histórico (mayor = menos variabilidad).
+
+## Paso 7: Asignación de Escaños D'Hondt
+
+Finalmente, asignamos escaños usando el método D'Hondt. Primero, preparamos los datos en el formato que espera `fast_dhondt()`:
+
+```{r}
+# Convertir la matriz de votos provinciales a formato largo
+prov_df <- as.data.frame(votos_prov) %>%
+  mutate(codigo_provincia = rownames(votos_prov)) %>%
+  pivot_longer(
+    cols = -codigo_provincia,
+    names_to = "partido",
+    values_to = "votos_prov"
+  ) %>%
+  # Añadir recuento de escaños
+  left_join(n_seats, by = "codigo_provincia") %>%
+  # Añadir identificador de simulación
+  mutate(sim = 0L) %>%
+  # Calcular porcentaje de voto por provincia
+  group_by(sim, codigo_provincia) %>%
+  mutate(
+    votos_validos = sum(votos_prov),
+    pct_sobre_validos = votos_prov / votos_validos
+  ) %>%
+  ungroup()
+
+head(prov_df)
+```
+
+Aplicar el umbral electoral (3%) y ejecutar D'Hondt:
+
+```{r}
+# Filtrar partidos que superan el umbral
+prov_sobre_umbral <- prov_df %>%
+  filter(!partido %in% c("OTBL", "ABNL"), pct_sobre_validos >= 0.03)
+
+# Ejecutar asignación D'Hondt
+resultado_dhondt <- fast_dhondt(
+  data = prov_sobre_umbral,
+  cod_prov = codigo_provincia,
+  sim = sim,
+  partido = partido,
+  votos_prov = votos_prov,
+  nseats = n_diputados
+)
+
+head(resultado_dhondt)
+```
+
+Agregar para obtener el total de escaños por partido:
+
+```{r}
+escanos_por_partido <- resultado_dhondt %>%
+  filter(tipo == "Asignado") %>%
+  count(partido, name = "escanos") %>%
+  arrange(desc(escanos))
+
+escanos_por_partido
+cat("Total escaños asignados:", sum(escanos_por_partido$escanos), "\n")
+```
+
+## Paso 8: El Pipeline Completo con `run_vota()`
+
+En la práctica, usarías `run_vota()` que orquesta todos los pasos anteriores automáticamente. Lee desde un archivo Excel, así que vamos a crear uno usando la función de plantilla:
+
+```{r eval=FALSE}
+# Crear un proyecto temporal
+tmp_dir <- tempdir()
+project_dir <- file.path(tmp_dir, "tutorial_proyecto")
+setup_electoral_project(project_dir)
+
+# Ejecutar el pipeline completo
+resultados <- run_vota(
+  input_path = file.path(project_dir, "input", "input.xlsx"),
+  output_file = file.path(project_dir, "output", "resultados.rds"),
+  uncertainty_method = "mcmc",
+  nsims = 50,
+  factor_correccion_abstencion = 3,
+  factor_correccion_jovenes = 2.5,
+  factor_correccion_otbl = 2.5,
+  tiempo_entre_elecciones = 0.1,
+  tau = 300,
+  umbral = 0.03,
+  seed = 42,
+  verbose = TRUE
+)
+
+# Ver resultados
+print(resultados)
+summary(resultados)
+
+# Visualizar
+plot(resultados, "nacional")
+plot(resultados, "seats_dist")
+```
+
+## Resumen
+
+En este tutorial hemos recorrido cada paso de la simulación electoral:
+
+1. **Exploración de datos** -- Entendiendo la matriz de transferencia, resultados anteriores y patrones provinciales
+2. **Simulación de la matriz de transferencia** -- `simulate_mt()` para incertidumbre multinomial
+3. **Algoritmo VOTA** -- `vota()` con cinco correcciones secuenciales
+4. **Proyección provincial** -- `simulate_prov_votes()` con variabilidad Dirichlet
+5. **Asignación de escaños** -- `fast_dhondt()` para D'Hondt vectorizado
+6. **Pipeline completo** -- `run_vota()` integrando todo
+
+## Más Información
+
+- **[Primeros pasos](primeros-pasos.html)** -- Guía de configuración rápida
+- **[Metodología VOTA](metodologia.html)** -- Detalles estadísticos del algoritmo

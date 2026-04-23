@@ -1,7 +1,8 @@
 # vota
 
-[![CRAN
-status](https://www.r-pkg.org/badges/version/vota)](https://CRAN.R-project.org/package=vota)
+[![Not on
+CRAN](https://img.shields.io/badge/CRAN-not%20available-red.svg)](https://cran.r-project.org)
+[![R-CMD-check](https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml)
 [![pkgdown](https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml)
 [![License: GPL (\>=
 3)](https://img.shields.io/badge/License-GPL%20(%3E%3D%203)-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)

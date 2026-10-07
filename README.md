@@ -16,8 +16,8 @@
 You can install the development version from GitHub:
 
 ```r
-# install.packages("devtools")
-devtools::install_github("hmeleiro/vota")
+# install.packages("pak")
+pak::pak("hmeleiro/vota")
 ```
 
 ## Overview

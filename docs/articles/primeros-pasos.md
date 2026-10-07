@@ -15,8 +15,8 @@ mínima usando los datasets incluidos en el paquete.
 
 ``` r
 
-# Instalar desde GitHub
-devtools::install_github("hmeleiro/vota")
+# install.packages("pak")
+pak::pak("hmeleiro/vota")
 ```
 
 ``` r

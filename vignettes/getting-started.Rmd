@@ -23,8 +23,8 @@ This vignette walks you through the basic setup and a minimal simulation using t
 ## Installation
 
 ```{r eval=FALSE}
-# Install from GitHub
-devtools::install_github("hmeleiro/vota")
+# install.packages("pak")
+pak::pak("hmeleiro/vota")
 ```
 
 ```{r}

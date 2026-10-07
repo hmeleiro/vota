@@ -157,7 +157,7 @@ Parámetros clave de
 | `factor_correccion_jovenes` | `2.5` | Factor de corrección por nuevos votantes |
 | `factor_correccion_otbl` | `3` | Factor de corrección por voto otros/blanco |
 | `tiempo_entre_elecciones` | `0.1` | Años entre elecciones (ajuste demográfico) |
-| `tau` | `300` | Concentración Dirichlet para proyección provincial |
+| `tau` | `800` | Concentración Dirichlet para proyección provincial |
 | `umbral` | `0.03` | Umbral mínimo de voto para asignación de escaños (3%) |
 | `tipo_umbral` | `"provincial"` | Tipo de umbral: `"provincial"`, `"autonomico"` o `"mixto"` |
 | `interval_level` | `0.9` | Nivel de confianza para intervalos de incertidumbre |

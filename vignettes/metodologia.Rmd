@@ -103,10 +103,11 @@ Cuando `uncertainty_method = "bootstrap"`, los datos individuales de encuesta se
 Las estimaciones nacionales se proyectan a provincias usando la función `project_to_districts()`:
 
 1. Los **patrones históricos** de `patrones_23J` definen la distribución provincial esperada de cada partido
-2. La **simulación Dirichlet** añade variabilidad: para cada partido, las cuotas provinciales se extraen de una distribución Dirichlet centrada en el patrón histórico, con parámetro de concentración `tau`
+2. La **simulación 0** usa esos patrones sin perturbación ni suavizado y asigna a cada provincia el valor esperado. Por tanto, constituye la proyección puntual completamente determinista
+3. Para las simulaciones `sim > 0`, la **simulación Dirichlet** añade variabilidad: para cada partido, las cuotas provinciales se extraen de una distribución Dirichlet centrada en el patrón histórico, con parámetro de concentración `tau`
    - Mayor `tau` (p.ej., 500) = menos variabilidad provincial
    - Menor `tau` (p.ej., 100) = más variabilidad provincial
-3. La **asignación multinomial** distribuye los votos nacionales totales entre las celdas provincia-partido
+4. La **asignación multinomial** distribuye los votos nacionales totales entre las celdas provincia-partido únicamente para `sim > 0`
 
 ```{r}
 data(patrones_23J)

@@ -134,22 +134,31 @@ simulate_mt <- function(mt_data, nsims = 10, seed = NULL) {
   return(mt_sims)
 }
 
-#' Simulaciones Monte Carlo de matrices de provincia x partido
+#' Proyeccion de matrices de provincia x partido
 #'
-#' Genera simulaciones multinomiales de resultados de cada partido en cada provincia
+#' Proyecta los resultados de cada partido a cada provincia mediante patrones
+#' historicos, de forma determinista o mediante simulacion.
 #'
 #' @param patrones data frame con patrones provinciales (columnas: codigo_provincia, idv, patron)
 #' @param estimacion vector con votos nacionales por partido (nombres = colnames(patrones))
-#' @param method Metodo de simulacion: "dirichlet" o "logitnorm"
+#' @param method Metodo de proyeccion: "dirichlet", "logitnorm" o
+#'   "deterministic". El metodo determinista usa los patrones historicos sin
+#'   perturbar y no consume numeros aleatorios.
 #' @param tau Concentracion para Dirichlet (escalar o vector por partido)
 #' @param sigma Desviacion estandar del ruido en log-escala para Logistic-normal
 #' @param Sigma Matriz de covarianza opcional (PxP) para correlacion espacial
 #' @param eps Smoothing para evitar ceros exactos en patrones
 #' @param seed Semilla para reproducibilidad (por defecto NULL)
 #'
-#' @return Matriz con simulacion de votos por provincia (filas = provincias, columnas = partidos)
+#' @return Matriz con votos por provincia (filas = provincias, columnas =
+#'   partidos). Para los metodos estocasticos contiene un sorteo multinomial;
+#'   para `method = "deterministic"`, los valores esperados sin sorteo.
+#' @details Con `method = "deterministic"`, los patrones de cada partido se
+#'   normalizan entre provincias y se multiplican por sus votos nacionales. No
+#'   se aplica smoothing, por lo que los ceros historicos se conservan.
 #' @export
-simulate_prov_votes <- function(patrones, estimacion, method = c("dirichlet", "logitnorm"),
+simulate_prov_votes <- function(patrones, estimacion,
+                                method = c("dirichlet", "logitnorm", "deterministic"),
                                 tau = 300, sigma = 0.15, Sigma = NULL, eps = 1e-12, seed = NULL) {
   softmax <- function(x) {
     e <- exp(x - max(x))
@@ -157,7 +166,6 @@ simulate_prov_votes <- function(patrones, estimacion, method = c("dirichlet", "l
   }
 
   method <- match.arg(method)
-  if (!is.null(seed)) set.seed(seed)
 
   patrones <- patrones %>%
     pivot_wider(names_from = idv, values_from = patron, values_fill = 0)
@@ -180,6 +188,43 @@ simulate_prov_votes <- function(patrones, estimacion, method = c("dirichlet", "l
   votos <- votos[colnames(patrones)]
   P <- nrow(patrones)
   K <- ncol(patrones)
+
+  if (method == "deterministic") {
+    if (any(!is.finite(patrones))) {
+      stop("'patrones' contiene valores no finitos")
+    }
+    if (any(patrones < 0)) {
+      stop("'patrones' no puede contener valores negativos")
+    }
+
+    pattern_totals <- colSums(patrones)
+    missing_patterns <- names(votos)[votos > 0 & pattern_totals <= 0]
+
+    if (length(missing_patterns) > 0) {
+      stop(
+        "No hay un patron provincial positivo para los siguientes partidos con votos: ",
+        paste(missing_patterns, collapse = ", ")
+      )
+    }
+
+    patrones_normalizados <- matrix(
+      0,
+      nrow = P,
+      ncol = K,
+      dimnames = dimnames(patrones)
+    )
+    has_pattern <- pattern_totals > 0
+    patrones_normalizados[, has_pattern] <- sweep(
+      patrones[, has_pattern, drop = FALSE],
+      2,
+      pattern_totals[has_pattern],
+      "/"
+    )
+
+    return(sweep(patrones_normalizados, 2, votos, "*"))
+  }
+
+  if (!is.null(seed)) set.seed(seed)
 
   # Smoothing para evitar ceros exactos
   patrones <- pmax(patrones, eps)

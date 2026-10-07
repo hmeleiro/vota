@@ -1,4 +1,4 @@
-﻿#' Forward-pipe operator
+#' Forward-pipe operator
 #'
 #' Re-exports magrittr's pipe so '%>%' is available to package users
 #'

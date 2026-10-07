@@ -45,9 +45,9 @@ historical patterns and electoral census data.
 \details{
 This process:
 \enumerate{
-\item Applies district historical patterns to national estimates
+\item Applies unperturbed district historical patterns to simulation 0
+\item Adds Dirichlet and multinomial uncertainty to simulations greater than 0
 \item Adjusts by real electoral census of each district
-\item Generates additional simulations with multinomial uncertainty
 \item Prepares data for D'Hondt allocation
 }
 }

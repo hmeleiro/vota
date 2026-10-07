@@ -93,7 +93,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Héctor Meleiro \email{hmeleiros@gmail.com}
+\strong{Maintainer}: H<U+00E9>ctor Meleiro \email{hmeleiros@gmail.com}
 
 }
 \keyword{internal}

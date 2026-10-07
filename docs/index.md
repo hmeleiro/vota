@@ -156,7 +156,7 @@ Key parameters for
 | `factor_correccion_jovenes` | `2.5` | New voters correction factor |
 | `factor_correccion_otbl` | `3` | Other/blank votes correction factor |
 | `tiempo_entre_elecciones` | `0.1` | Years between elections (for demographic adjustment) |
-| `tau` | `300` | Dirichlet concentration for provincial projection |
+| `tau` | `800` | Dirichlet concentration for provincial projection |
 | `umbral` | `0.03` | Minimum vote threshold for seat assignment (3%) |
 | `tipo_umbral` | `"provincial"` | Threshold type: `"provincial"`, `"autonomico"`, or `"mixto"` |
 | `interval_level` | `0.9` | Confidence level for uncertainty intervals |

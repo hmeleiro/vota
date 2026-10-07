@@ -103,10 +103,11 @@ When `uncertainty_method = "bootstrap"`, individual-level survey data is resampl
 National estimates are projected to provinces using the `project_to_districts()` function:
 
 1. **Historical patterns** from `patrones_23J` define the expected provincial distribution of each party
-2. **Dirichlet simulation** adds variability: for each party, provincial shares are drawn from a Dirichlet distribution centered on the historical pattern, with concentration parameter `tau`
-   - Higher `tau` (e.g., 500) = less provincial variability
-   - Lower `tau` (e.g., 100) = more provincial variability
-3. **Multinomial allocation** distributes total national votes across province-party cells
+2. **Simulation 0** uses those patterns without perturbation or smoothing and assigns the expected value to each province. It is therefore the fully deterministic point projection
+3. For simulations with `sim > 0`, **Dirichlet simulation** adds variability: for each party, provincial shares are drawn from a Dirichlet distribution centered on the historical pattern, with concentration parameter `tau`
+   - Higher `tau` (e.g., 800) = less provincial variability
+   - Lower `tau` (e.g., 400) = more provincial variability
+4. **Multinomial allocation** distributes total national votes across province-party cells only for `sim > 0`
 
 ```{r}
 data(patrones_23J)

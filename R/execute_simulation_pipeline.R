@@ -328,16 +328,21 @@ execute_vota_bottom_up <- function(mt_sims, district_col, factor_correccion_abst
       safe_map_dfr(sim, function(prov) {
         prov$estimacion
       })
-    }, .id = "sim")
+    }, .id = "sim") %>%
+    rename(
+      partido = idv,
+      votos_salida = votos
+    )
 
   mt_sims_electores <-
     safe_map_dfr(estimacion_previa_sims_list, function(sim) {
       safe_map_dfr(sim, function(prov) {
         prov$mt
       })
-    }, .id = "sim")
-
-
+    }, .id = "sim") %>%
+    rename(
+      partido = idv
+    )
 
   return(list(
     estimacion_previa_sims = estimacion_previa_sims,

@@ -211,7 +211,7 @@ estadisticos
 
 ## Paso 6: Proyección Provincial
 
-Las estimaciones nacionales necesitan distribuirse entre las 52 provincias de España usando patrones históricos de voto. La función `simulate_prov_votes()` hace esto usando una distribución Dirichlet:
+Las estimaciones nacionales necesitan distribuirse entre las 52 provincias de España usando patrones históricos de voto. Para `sim = 0`, `simulate_prov_votes()` usa el método determinista: aplica los patrones originales sin perturbación y sin sorteos Dirichlet o multinomial.
 
 ```{r}
 # Usar la estimación puntual (sim=0)
@@ -228,13 +228,11 @@ patrones_filtrados <- patrones_23J %>%
   mutate(patron = patron / 100) %>%
   filter(patron > 0)
 
-# Simular distribución provincial de votos
+# Proyectar determinísticamente la estimación puntual
 votos_prov <- simulate_prov_votes(
   patrones = patrones_filtrados,
   estimacion = estimacion_nacional,
-  method = "dirichlet",
-  tau = 200,
-  seed = 42
+  method = "deterministic"
 )
 
 # El resultado es una matriz: provincias (filas) x partidos (columnas)
@@ -242,7 +240,7 @@ dim(votos_prov)
 head(votos_prov[, 1:4])
 ```
 
-Cada celda contiene el número simulado de votos para ese partido en esa provincia. El parámetro `tau` controla cuánto se ciñe la distribución provincial al patrón histórico (mayor = menos variabilidad).
+Cada celda contiene el número esperado de votos para ese partido en esa provincia. El resultado no depende de `seed`, `tau` ni del estado del generador aleatorio. Para `sim > 0`, el pipeline sigue usando el método Dirichlet y la asignación multinomial; en esas simulaciones, `tau` controla cuánto se ciñe la distribución provincial al patrón histórico (mayor = menos variabilidad).
 
 ## Paso 7: Asignación de Escaños D'Hondt
 

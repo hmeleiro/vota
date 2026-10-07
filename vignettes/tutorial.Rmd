@@ -210,7 +210,7 @@ summary_stats
 
 ## Step 6: Provincial Projection
 
-National estimates need to be distributed across Spain's 52 provinces using historical voting patterns. The `simulate_prov_votes()` function does this using a Dirichlet distribution:
+National estimates need to be distributed across Spain's 52 provinces using historical voting patterns. For `sim = 0`, `simulate_prov_votes()` uses the deterministic method: it applies the original patterns without perturbation and without Dirichlet or multinomial draws.
 
 ```{r}
 # Use the point estimate (sim=0)
@@ -227,13 +227,11 @@ patrones_filtrados <- patrones_23J %>%
   mutate(patron = patron / 100) %>%
   filter(patron > 0)
 
-# Simulate provincial vote distribution
+# Project the point estimate deterministically
 prov_votes <- simulate_prov_votes(
   patrones = patrones_filtrados,
   estimacion = estimacion_nacional,
-  method = "dirichlet",
-  tau = 300,
-  seed = 42
+  method = "deterministic"
 )
 
 # Result is a matrix: provinces (rows) x parties (columns)
@@ -241,7 +239,7 @@ dim(prov_votes)
 head(prov_votes[, 1:4])
 ```
 
-Each cell contains the simulated number of votes for that party in that province. The `tau` parameter controls how closely the provincial distribution follows the historical pattern (higher = less variability).
+Each cell contains the expected number of votes for that party in that province. The result does not depend on `seed`, `tau`, or the random-number generator state. For `sim > 0`, the pipeline continues to use the Dirichlet method and multinomial allocation; in those simulations, `tau` controls how closely the provincial distribution follows the historical pattern (higher = less variability).
 
 ## Step 7: D'Hondt Seat Allocation
 

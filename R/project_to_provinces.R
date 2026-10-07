@@ -15,9 +15,9 @@
 #'
 #' @details
 #' This process:
-#' 1. Applies district historical patterns to national estimates
-#' 2. Adjusts by real electoral census of each district
-#' 3. Generates additional simulations with multinomial uncertainty
+#' 1. Applies unperturbed district historical patterns to simulation 0
+#' 2. Adds Dirichlet and multinomial uncertainty to simulations greater than 0
+#' 3. Adjusts by real electoral census of each district
 #' 4. Prepares data for D'Hondt allocation
 #'
 #' @keywords internal
@@ -39,14 +39,18 @@ project_to_districts <- function(estimacion_previa_sims, patrones,
   votos_provincias_sims <-
     safe_map(estimacion_previa_sims, function(estimacion_previa) {
       sim <- unique(estimacion_previa$sim)
+      sim_value <- as.numeric(sim)
+      is_baseline <- length(sim_value) == 1L && !is.na(sim_value) && sim_value == 0
 
       # Generar semilla unica para esta simulacion
-      sim_seed <- if (!is.null(seed)) seed + as.numeric(sim) else NULL
+      sim_seed <- if (!is_baseline && !is.null(seed)) seed + sim_value else NULL
+      projection_method <- if (is_baseline) "deterministic" else "dirichlet"
 
       estimacion_provincial_mat <-
         simulate_prov_votes(
           patrones = patrones,
           estimacion = estimacion_previa,
+          method = projection_method,
           tau = tau,
           seed = sim_seed
         )

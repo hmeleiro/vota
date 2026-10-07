@@ -2,12 +2,12 @@
 % Please edit documentation in R/simulation.R
 \name{simulate_prov_votes}
 \alias{simulate_prov_votes}
-\title{Simulaciones Monte Carlo de matrices de provincia x partido}
+\title{Proyeccion de matrices de provincia x partido}
 \usage{
 simulate_prov_votes(
   patrones,
   estimacion,
-  method = c("dirichlet", "logitnorm"),
+  method = c("dirichlet", "logitnorm", "deterministic"),
   tau = 300,
   sigma = 0.15,
   Sigma = NULL,
@@ -20,7 +20,9 @@ simulate_prov_votes(
 
 \item{estimacion}{vector con votos nacionales por partido (nombres = colnames(patrones))}
 
-\item{method}{Metodo de simulacion: "dirichlet" o "logitnorm"}
+\item{method}{Metodo de proyeccion: "dirichlet", "logitnorm" o
+"deterministic". El metodo determinista usa los patrones historicos sin
+perturbar y no consume numeros aleatorios.}
 
 \item{tau}{Concentracion para Dirichlet (escalar o vector por partido)}
 
@@ -33,8 +35,16 @@ simulate_prov_votes(
 \item{seed}{Semilla para reproducibilidad (por defecto NULL)}
 }
 \value{
-Matriz con simulacion de votos por provincia (filas = provincias, columnas = partidos)
+Matriz con votos por provincia (filas = provincias, columnas =
+partidos). Para los metodos estocasticos contiene un sorteo multinomial;
+para \code{method = "deterministic"}, los valores esperados sin sorteo.
 }
 \description{
-Genera simulaciones multinomiales de resultados de cada partido en cada provincia
+Proyecta los resultados de cada partido a cada provincia mediante patrones
+historicos, de forma determinista o mediante simulacion.
+}
+\details{
+Con \code{method = "deterministic"}, los patrones de cada partido se
+normalizan entre provincias y se multiplican por sus votos nacionales. No
+se aplica smoothing, por lo que los ceros historicos se conservan.
 }

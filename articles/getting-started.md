@@ -14,8 +14,8 @@ using the package’s included datasets.
 
 ``` r
 
-# Install from GitHub
-devtools::install_github("hmeleiro/vota")
+# install.packages("pak")
+pak::pak("hmeleiro/vota")
 ```
 
 ``` r

@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -469,8 +469,10 @@ transfer matrix:</p>
 <h2 id="step-6-provincial-projection">Step 6: Provincial Projection<a class="anchor" aria-label="anchor" href="#step-6-provincial-projection"></a>
 </h2>
 <p>National estimates need to be distributed across Spain’s 52 provinces
-using historical voting patterns. The <code><a href="../reference/simulate_prov_votes.html">simulate_prov_votes()</a></code>
-function does this using a Dirichlet distribution:</p>
+using historical voting patterns. For <code>sim = 0</code>,
+<code><a href="../reference/simulate_prov_votes.html">simulate_prov_votes()</a></code> uses the deterministic method: it
+applies the original patterns without perturbation and without Dirichlet
+or multinomial draws.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use the point estimate (sim=0)</span></span>
 <span><span class="va">estimacion_nacional</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">estimacion</span></span>
@@ -486,30 +488,31 @@ function does this using a Dirichlet distribution:</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>patron <span class="op">=</span> <span class="va">patron</span> <span class="op">/</span> <span class="fl">100</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">patron</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Simulate provincial vote distribution</span></span>
+<span><span class="co"># Project the point estimate deterministically</span></span>
 <span><span class="va">prov_votes</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_prov_votes.html">simulate_prov_votes</a></span><span class="op">(</span></span>
 <span>  patrones <span class="op">=</span> <span class="va">patrones_filtrados</span>,</span>
 <span>  estimacion <span class="op">=</span> <span class="va">estimacion_nacional</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"dirichlet"</span>,</span>
-<span>  tau <span class="op">=</span> <span class="fl">300</span>,</span>
-<span>  seed <span class="op">=</span> <span class="fl">42</span></span>
+<span>  method <span class="op">=</span> <span class="st">"deterministic"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Result is a matrix: provinces (rows) x parties (columns)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">prov_votes</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 52 15</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">prov_votes</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      ABNL EH Bildu ERC Junts</span></span>
-<span><span class="co">#&gt; 01 150182    20276   0     0</span></span>
-<span><span class="co">#&gt; 02  38243        0   0     0</span></span>
-<span><span class="co">#&gt; 03 356715        0   0     0</span></span>
-<span><span class="co">#&gt; 04  70118        0   0     0</span></span>
-<span><span class="co">#&gt; 05  83491        0   0     0</span></span>
-<span><span class="co">#&gt; 06 125451        0   0     0</span></span></code></pre></div>
-<p>Each cell contains the simulated number of votes for that party in
-that province. The <code>tau</code> parameter controls how closely the
-provincial distribution follows the historical pattern (higher = less
-variability).</p>
+<span><span class="co">#&gt;         ABNL EH Bildu ERC Junts</span></span>
+<span><span class="co">#&gt; 01  86221.01 19402.82   0     0</span></span>
+<span><span class="co">#&gt; 02  81609.95     0.00   0     0</span></span>
+<span><span class="co">#&gt; 03 375341.32     0.00   0     0</span></span>
+<span><span class="co">#&gt; 04 157144.65     0.00   0     0</span></span>
+<span><span class="co">#&gt; 05  32027.12     0.00   0     0</span></span>
+<span><span class="co">#&gt; 06 152439.19     0.00   0     0</span></span></code></pre></div>
+<p>Each cell contains the expected number of votes for that party in
+that province. The result does not depend on <code>seed</code>,
+<code>tau</code>, or the random-number generator state. For
+<code>sim &gt; 0</code>, the pipeline continues to use the Dirichlet
+method and multinomial allocation; in those simulations,
+<code>tau</code> controls how closely the provincial distribution
+follows the historical pattern (higher = less variability).</p>
 </div>
 <div class="section level2">
 <h2 id="step-7-dhondt-seat-allocation">Step 7: D’Hondt Seat Allocation<a class="anchor" aria-label="anchor" href="#step-7-dhondt-seat-allocation"></a>
@@ -542,13 +545,13 @@ prepare the data in the format expected by
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">prov_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 7</span></span></span>
 <span><span class="co">#&gt;   codigo_provincia partido  votos_prov n_diputados   sim votos_validos</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               ABNL         <span style="text-decoration: underline;">150</span>182           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 01               EH Bildu      <span style="text-decoration: underline;">20</span>276           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 01               ERC               0           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 01               Junts             0           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 01               OTBL           <span style="text-decoration: underline;">1</span>861           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 01               PNV            <span style="text-decoration: underline;">7</span>882           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               ABNL         <span style="text-decoration: underline;">86</span>221.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 01               EH Bildu     <span style="text-decoration: underline;">19</span>403.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 01               ERC              0            4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 01               Junts            0            4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 01               OTBL          <span style="text-decoration: underline;">3</span>939.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 01               PNV           <span style="text-decoration: underline;">8</span>493.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: pct_sobre_validos &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>Apply the electoral threshold (3%) and run D’Hondt:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
@@ -569,13 +572,13 @@ prepare the data in the format expected by
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dhondt_result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 13</span></span></span>
 <span><span class="co">#&gt;   codigo_provincia partido  votos_prov n_diputados   sim votos_validos</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               PP            <span style="text-decoration: underline;">53</span>234           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 01               PP            <span style="text-decoration: underline;">53</span>234           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 01               Vox           <span style="text-decoration: underline;">26</span>581           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 01               EH Bildu      <span style="text-decoration: underline;">20</span>276           4     0        <span style="text-decoration: underline;">281</span>862</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 02               PP           <span style="text-decoration: underline;">134</span>157           4     0        <span style="text-decoration: underline;">287</span>853</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 02               Vox           <span style="text-decoration: underline;">79</span>180           4     0        <span style="text-decoration: underline;">287</span>853</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               PSOE         <span style="text-decoration: underline;">38</span>058.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 01               PP           <span style="text-decoration: underline;">24</span>191.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 01               EH Bildu     <span style="text-decoration: underline;">19</span>403.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 01               PSOE         <span style="text-decoration: underline;">38</span>058.           4     0       <span style="text-decoration: underline;">205</span>887.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 02               PP           <span style="text-decoration: underline;">71</span>112.           4     0       <span style="text-decoration: underline;">281</span>822.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 02               PSOE         <span style="text-decoration: underline;">62</span>209.           4     0       <span style="text-decoration: underline;">281</span>822.</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: pct_sobre_validos &lt;dbl&gt;, divisor &lt;int&gt;, cociente &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   order &lt;int&gt;, tipo &lt;chr&gt;, col &lt;dbl&gt;, dif &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>Aggregate to get total seats per party:</p>
@@ -589,17 +592,17 @@ prepare the data in the format expected by
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 12 × 2</span></span></span>
 <span><span class="co">#&gt;    partido  seats</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PP         130</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PSOE       116</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Vox         63</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sumar       14</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> EH Bildu     7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> ERC          7</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Podemos      6</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> Junts        2</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> PP         127</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> PSOE       126</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> Vox         62</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> Sumar       10</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> ERC          7</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> EH Bildu     6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> Podemos      5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> BNG          2</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> PNV          2</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> BNG          1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> CCa          1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> CCa          1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> Junts        1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> UPN          1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Total seats assigned:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">seats_by_party</span><span class="op">$</span><span class="va">seats</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Total seats assigned: 350</span></span></code></pre></div>
@@ -689,7 +692,7 @@ everything together</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Licenciado bajo <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener" class="external-link">GPL-3</a>. Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Licenciado bajo <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener" class="external-link">GPL-3</a>. Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

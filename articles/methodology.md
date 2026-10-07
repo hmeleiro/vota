@@ -1,6 +1,7 @@
 # The VOTA Methodology
 
 ``` r
+
 library(vota)
 ```
 
@@ -35,6 +36,7 @@ to another. Special categories include:
 - **Indecisos**: Undecided voters
 
 ``` r
+
 data(mt)
 str(mt)
 #> tibble [15 × 8] (S3: tbl_df/tbl/data.frame)
@@ -73,7 +75,9 @@ downscaled by `factor_correccion_jovenes` (default: 2.5).
 
 The number of new voters is estimated as:
 
-$$\text{New voters} = \text{Total previous votes} \times 0.01 \times \text{years between elections}$$
+``` math
+\text{New voters} = \text{Total previous votes} \times 0.01 \times \text{years between elections}
+```
 
 A corresponding mortality adjustment is applied to existing voter groups
 proportionally.
@@ -137,15 +141,20 @@ function:
 
 1.  **Historical patterns** from `patrones_23J` define the expected
     provincial distribution of each party
-2.  **Dirichlet simulation** adds variability: for each party,
-    provincial shares are drawn from a Dirichlet distribution centered
-    on the historical pattern, with concentration parameter `tau`
-    - Higher `tau` (e.g., 500) = less provincial variability
-    - Lower `tau` (e.g., 100) = more provincial variability
-3.  **Multinomial allocation** distributes total national votes across
-    province-party cells
+2.  **Simulation 0** uses those patterns without perturbation or
+    smoothing and assigns the expected value to each province. It is
+    therefore the fully deterministic point projection
+3.  For simulations with `sim > 0`, **Dirichlet simulation** adds
+    variability: for each party, provincial shares are drawn from a
+    Dirichlet distribution centered on the historical pattern, with
+    concentration parameter `tau`
+    - Higher `tau` (e.g., 800) = less provincial variability
+    - Lower `tau` (e.g., 400) = more provincial variability
+4.  **Multinomial allocation** distributes total national votes across
+    province-party cells only for `sim > 0`
 
 ``` r
+
 data(patrones_23J)
 # Provincial patterns: each party's historical vote share by province
 head(patrones_23J)
@@ -185,6 +194,7 @@ The threshold can be applied at three levels:
   regional threshold
 
 ``` r
+
 data(n_seats)
 # 52 districts with varying number of seats
 summary(n_seats$n_diputados)
@@ -208,15 +218,15 @@ methods for:
 
 Key parameters and their effects:
 
-| Parameter                      | Effect of increasing                                            |
-|--------------------------------|-----------------------------------------------------------------|
-| `nsims`                        | More stable uncertainty estimates, slower computation           |
-| `tau`                          | Less provincial variability, tighter around historical patterns |
-| `factor_correccion_abstencion` | More discounting of abstainers’ stated intentions               |
-| `factor_correccion_jovenes`    | More discounting of new voters’ stated intentions               |
-| `factor_correccion_otbl`       | More discounting of other/blank voters’ stated intentions       |
-| `tiempo_entre_elecciones`      | Larger new-voter cohort, larger mortality adjustment            |
-| `umbral`                       | Higher threshold to earn seats (filters out smaller parties)    |
+| Parameter | Effect of increasing |
+|----|----|
+| `nsims` | More stable uncertainty estimates, slower computation |
+| `tau` | Less provincial variability, tighter around historical patterns |
+| `factor_correccion_abstencion` | More discounting of abstainers’ stated intentions |
+| `factor_correccion_jovenes` | More discounting of new voters’ stated intentions |
+| `factor_correccion_otbl` | More discounting of other/blank voters’ stated intentions |
+| `tiempo_entre_elecciones` | Larger new-voter cohort, larger mortality adjustment |
+| `umbral` | Higher threshold to earn seats (filters out smaller parties) |
 
 ## Pipeline Summary
 

@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/JetBrains_Mono-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -232,20 +232,24 @@ replicas (<code><a href="https://rdrr.io/pkg/survey/man/calibrate.html" class="e
 <strong>Historical patterns</strong> from <code>patrones_23J</code>
 define the expected provincial distribution of each party</li>
 <li>
-<strong>Dirichlet simulation</strong> adds variability: for each
-party, provincial shares are drawn from a Dirichlet distribution
-centered on the historical pattern, with concentration parameter
-<code>tau</code>
+<strong>Simulation 0</strong> uses those patterns without
+perturbation or smoothing and assigns the expected value to each
+province. It is therefore the fully deterministic point projection</li>
+<li>For simulations with <code>sim &gt; 0</code>, <strong>Dirichlet
+simulation</strong> adds variability: for each party, provincial shares
+are drawn from a Dirichlet distribution centered on the historical
+pattern, with concentration parameter <code>tau</code>
 <ul>
-<li>Higher <code>tau</code> (e.g., 500) = less provincial
+<li>Higher <code>tau</code> (e.g., 800) = less provincial
 variability</li>
-<li>Lower <code>tau</code> (e.g., 100) = more provincial
+<li>Lower <code>tau</code> (e.g., 400) = more provincial
 variability</li>
 </ul>
 </li>
 <li>
 <strong>Multinomial allocation</strong> distributes total national
-votes across province-party cells</li>
+votes across province-party cells only for <code>sim &gt; 0</code>
+</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">patrones_23J</span><span class="op">)</span></span>
@@ -409,7 +413,7 @@ Hands-on walkthrough with internal data</li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Licenciado bajo <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener" class="external-link">GPL-3</a>. Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Licenciado bajo <a href="https://www.gnu.org/licenses/gpl-3.0" target="_blank" rel="noopener" class="external-link">GPL-3</a>. Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

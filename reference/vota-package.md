@@ -117,4 +117,4 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Héctor Meleiro <hmeleiros@gmail.com>
+**Maintainer**: H\<U+00E9\>ctor Meleiro <hmeleiros@gmail.com>

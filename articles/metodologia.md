@@ -1,6 +1,7 @@
 # Metodología VOTA
 
 ``` r
+
 library(vota)
 ```
 
@@ -35,6 +36,7 @@ partido a otro. Las categorías especiales incluyen:
 - **Indecisos**: Votantes que aún no han decidido
 
 ``` r
+
 data(mt)
 str(mt)
 #> tibble [15 × 8] (S3: tbl_df/tbl/data.frame)
@@ -77,7 +79,9 @@ transferencia se reducen de forma similar por
 
 El número de nuevos votantes se estima como:
 
-$$\text{Nuevos votantes} = \text{Total votos anteriores} \times 0.01 \times \text{años entre elecciones}$$
+``` math
+\text{Nuevos votantes} = \text{Total votos anteriores} \times 0.01 \times \text{años entre elecciones}
+```
 
 Se aplica un ajuste de mortalidad correspondiente a los grupos de
 votantes existentes de forma proporcional.
@@ -145,16 +149,20 @@ Las estimaciones nacionales se proyectan a provincias usando la función
 
 1.  Los **patrones históricos** de `patrones_23J` definen la
     distribución provincial esperada de cada partido
-2.  La **simulación Dirichlet** añade variabilidad: para cada partido,
-    las cuotas provinciales se extraen de una distribución Dirichlet
-    centrada en el patrón histórico, con parámetro de concentración
-    `tau`
+2.  La **simulación 0** usa esos patrones sin perturbación ni suavizado
+    y asigna a cada provincia el valor esperado. Por tanto, constituye
+    la proyección puntual completamente determinista
+3.  Para las simulaciones `sim > 0`, la **simulación Dirichlet** añade
+    variabilidad: para cada partido, las cuotas provinciales se extraen
+    de una distribución Dirichlet centrada en el patrón histórico, con
+    parámetro de concentración `tau`
     - Mayor `tau` (p.ej., 500) = menos variabilidad provincial
     - Menor `tau` (p.ej., 100) = más variabilidad provincial
-3.  La **asignación multinomial** distribuye los votos nacionales
-    totales entre las celdas provincia-partido
+4.  La **asignación multinomial** distribuye los votos nacionales
+    totales entre las celdas provincia-partido únicamente para `sim > 0`
 
 ``` r
+
 data(patrones_23J)
 # Patrones provinciales: cuota histórica de voto de cada partido por provincia
 head(patrones_23J)
@@ -195,6 +203,7 @@ El umbral puede aplicarse a tres niveles:
   el autonómico
 
 ``` r
+
 data(n_seats)
 # 52 circunscripciones con diferente número de escaños
 summary(n_seats$n_diputados)
@@ -219,15 +228,15 @@ Todos los resultados se empaquetan en un objeto S3 de clase
 
 Parámetros clave y sus efectos:
 
-| Parámetro                      | Efecto al aumentar                                                        |
-|--------------------------------|---------------------------------------------------------------------------|
-| `nsims`                        | Estimaciones de incertidumbre más estables, cómputo más lento             |
-| `tau`                          | Menos variabilidad provincial, más ajustado a patrones históricos         |
-| `factor_correccion_abstencion` | Mayor descuento de las intenciones declaradas de abstencionistas          |
-| `factor_correccion_jovenes`    | Mayor descuento de las intenciones declaradas de nuevos votantes          |
-| `factor_correccion_otbl`       | Mayor descuento de las intenciones declaradas de votantes de otros/blanco |
-| `tiempo_entre_elecciones`      | Mayor cohorte de nuevos votantes, mayor ajuste de mortalidad              |
-| `umbral`                       | Umbral más alto para obtener escaños (filtra partidos más pequeños)       |
+| Parámetro | Efecto al aumentar |
+|----|----|
+| `nsims` | Estimaciones de incertidumbre más estables, cómputo más lento |
+| `tau` | Menos variabilidad provincial, más ajustado a patrones históricos |
+| `factor_correccion_abstencion` | Mayor descuento de las intenciones declaradas de abstencionistas |
+| `factor_correccion_jovenes` | Mayor descuento de las intenciones declaradas de nuevos votantes |
+| `factor_correccion_otbl` | Mayor descuento de las intenciones declaradas de votantes de otros/blanco |
+| `tiempo_entre_elecciones` | Mayor cohorte de nuevos votantes, mayor ajuste de mortalidad |
+| `umbral` | Umbral más alto para obtener escaños (filtra partidos más pequeños) |
 
 ## Resumen del Pipeline
 

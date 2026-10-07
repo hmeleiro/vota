@@ -20,7 +20,7 @@ Funciones de simulación y muestreo.
 - [`simulate_mt()`](https://vota.spainelectoralproject.com/reference/simulate_mt.md)
   : Simulaciones Monte Carlo de Matrices de Transferencia
 - [`simulate_prov_votes()`](https://vota.spainelectoralproject.com/reference/simulate_prov_votes.md)
-  : Simulaciones Monte Carlo de matrices de provincia x partido
+  : Proyeccion de matrices de provincia x partido
 - [`draw_mt()`](https://vota.spainelectoralproject.com/reference/draw_mt.md)
   : Generate transfer matrix simulations
 

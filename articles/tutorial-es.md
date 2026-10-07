@@ -9,6 +9,7 @@ como una caja negra, llamaremos a cada función individualmente para
 entender qué ocurre en cada etapa.
 
 ``` r
+
 library(vota)
 library(dplyr)
 #> 
@@ -33,6 +34,7 @@ columna es un partido de recuerdo de voto anterior. La última fila
 (recuerdo de voto).
 
 ``` r
+
 data(mt)
 mt
 #> # A tibble: 15 × 8
@@ -67,6 +69,7 @@ partido anterior ahora tienen intención de votar PP.
 elecciones del 23J 2023:
 
 ``` r
+
 data(votos_23J)
 votos_23J
 #> # A tibble: 6 × 2
@@ -89,6 +92,7 @@ recuentos absolutos de votos.
 provincia (como proporción entre 0 y 1):
 
 ``` r
+
 data(patrones_23J)
 head(patrones_23J, 12)
 #> # A tibble: 12 × 17
@@ -120,6 +124,7 @@ cat("Partidos:", length(unique(patrones_23J$partido)), "\n")
 ### Escaños por Provincia
 
 ``` r
+
 data(n_seats)
 head(n_seats)
 #> # A tibble: 6 × 2
@@ -138,6 +143,7 @@ cat("Total escaños:", sum(n_seats$n_diputados), "\n")
 ### Opcional: Ajustes y Partidos Pequeños
 
 ``` r
+
 data(retoques)
 retoques
 #> # A tibble: 2 × 2
@@ -165,6 +171,7 @@ necesita la matriz de transferencia en formato largo con columnas
 dataset `mt` en formato ancho.
 
 ``` r
+
 # Convertir mt ancha a formato largo
 party_cols <- setdiff(names(mt), c("idv", "n"))
 
@@ -224,6 +231,7 @@ remuestreo multinomial. Cada simulación extrae de la distribución
 muestral, creando variabilidad natural.
 
 ``` r
+
 mt_sims <- simulate_mt(mt_long, nsims = 5, seed = 42)
 
 # sim = 0 es la matriz original (sin perturbar)
@@ -253,6 +261,7 @@ toma una única matriz de transferencia (en formato largo con columnas
 voto. Ejecutémosla sobre la matriz original (`sim = 0`):
 
 ``` r
+
 # Obtener la matriz de transferencia original (sim=0)
 mt_original <- mt_sims %>% filter(sim == 0)
 
@@ -296,6 +305,7 @@ Son recuentos absolutos de votos.
 Podemos calcular porcentajes de voto:
 
 ``` r
+
 estimacion <- resultado$estimacion %>%
   mutate(pct = votos / sum(votos) * 100) %>%
   arrange(desc(pct))
@@ -328,6 +338,7 @@ Para cuantificar la incertidumbre, ejecutamos
 cada matriz de transferencia simulada:
 
 ``` r
+
 todas_estimaciones <- lapply(unique(mt_sims$sim), function(s) {
   mt_s <- mt_sims %>% filter(sim == s)
   res <- vota(
@@ -380,6 +391,7 @@ head(todas_estimaciones, n = 20)
 Ahora podemos ver cómo varían las estimaciones entre simulaciones:
 
 ``` r
+
 estadisticos <- todas_estimaciones %>%
   group_by(idv) %>%
   summarise(
@@ -414,11 +426,13 @@ estadisticos
 ## Paso 6: Proyección Provincial
 
 Las estimaciones nacionales necesitan distribuirse entre las 52
-provincias de España usando patrones históricos de voto. La función
+provincias de España usando patrones históricos de voto. Para `sim = 0`,
 [`simulate_prov_votes()`](https://vota.spainelectoralproject.com/reference/simulate_prov_votes.md)
-hace esto usando una distribución Dirichlet:
+usa el método determinista: aplica los patrones originales sin
+perturbación y sin sorteos Dirichlet o multinomial.
 
 ``` r
+
 # Usar la estimación puntual (sim=0)
 estimacion_nacional <- resultado$estimacion
 
@@ -433,31 +447,32 @@ patrones_filtrados <- patrones_23J %>%
   mutate(patron = patron / 100) %>%
   filter(patron > 0)
 
-# Simular distribución provincial de votos
+# Proyectar determinísticamente la estimación puntual
 votos_prov <- simulate_prov_votes(
   patrones = patrones_filtrados,
   estimacion = estimacion_nacional,
-  method = "dirichlet",
-  tau = 200,
-  seed = 42
+  method = "deterministic"
 )
 
 # El resultado es una matriz: provincias (filas) x partidos (columnas)
 dim(votos_prov)
 #> [1] 52 15
 head(votos_prov[, 1:4])
-#>      ABNL EH Bildu ERC Junts
-#> 01 171742    22332   0     0
-#> 02  29504        0   0     0
-#> 03 374512        0   0     0
-#> 04  56570        0   0     0
-#> 05  21189        0   0     0
-#> 06 297321        0   0     0
+#>         ABNL EH Bildu ERC Junts
+#> 01  86221.01 19402.82   0     0
+#> 02  81609.95     0.00   0     0
+#> 03 375341.32     0.00   0     0
+#> 04 157144.65     0.00   0     0
+#> 05  32027.12     0.00   0     0
+#> 06 152439.19     0.00   0     0
 ```
 
-Cada celda contiene el número simulado de votos para ese partido en esa
-provincia. El parámetro `tau` controla cuánto se ciñe la distribución
-provincial al patrón histórico (mayor = menos variabilidad).
+Cada celda contiene el número esperado de votos para ese partido en esa
+provincia. El resultado no depende de `seed`, `tau` ni del estado del
+generador aleatorio. Para `sim > 0`, el pipeline sigue usando el método
+Dirichlet y la asignación multinomial; en esas simulaciones, `tau`
+controla cuánto se ciñe la distribución provincial al patrón histórico
+(mayor = menos variabilidad).
 
 ## Paso 7: Asignación de Escaños D’Hondt
 
@@ -466,6 +481,7 @@ preparamos los datos en el formato que espera
 [`fast_dhondt()`](https://vota.spainelectoralproject.com/reference/fast_dhondt.md):
 
 ``` r
+
 # Convertir la matriz de votos provinciales a formato largo
 prov_df <- as.data.frame(votos_prov) %>%
   mutate(codigo_provincia = rownames(votos_prov)) %>%
@@ -489,19 +505,20 @@ prov_df <- as.data.frame(votos_prov) %>%
 head(prov_df)
 #> # A tibble: 6 × 7
 #>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
-#>   <chr>            <chr>         <int>       <dbl> <int>         <int>
-#> 1 01               ABNL         171742           4     0        386196
-#> 2 01               EH Bildu      22332           4     0        386196
-#> 3 01               ERC               0           4     0        386196
-#> 4 01               Junts             0           4     0        386196
-#> 5 01               OTBL           1138           4     0        386196
-#> 6 01               PNV            7821           4     0        386196
+#>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
+#> 1 01               ABNL         86221.           4     0       205887.
+#> 2 01               EH Bildu     19403.           4     0       205887.
+#> 3 01               ERC              0            4     0       205887.
+#> 4 01               Junts            0            4     0       205887.
+#> 5 01               OTBL          3939.           4     0       205887.
+#> 6 01               PNV           8493.           4     0       205887.
 #> # ℹ 1 more variable: pct_sobre_validos <dbl>
 ```
 
 Aplicar el umbral electoral (3%) y ejecutar D’Hondt:
 
 ``` r
+
 # Filtrar partidos que superan el umbral
 prov_sobre_umbral <- prov_df %>%
   filter(!partido %in% c("OTBL", "ABNL"), pct_sobre_validos >= 0.03)
@@ -518,14 +535,14 @@ resultado_dhondt <- fast_dhondt(
 
 head(resultado_dhondt)
 #> # A tibble: 6 × 13
-#>   codigo_provincia partido votos_prov n_diputados   sim votos_validos
-#>   <chr>            <chr>        <int>       <dbl> <int>         <int>
-#> 1 01               PP           71200           4     0        386196
-#> 2 01               PSOE         69712           4     0        386196
-#> 3 01               PP           71200           4     0        386196
-#> 4 01               PSOE         69712           4     0        386196
-#> 5 02               PP           77596           4     0        206836
-#> 6 02               Vox          63294           4     0        206836
+#>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
+#>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
+#> 1 01               PSOE         38058.           4     0       205887.
+#> 2 01               PP           24191.           4     0       205887.
+#> 3 01               EH Bildu     19403.           4     0       205887.
+#> 4 01               PSOE         38058.           4     0       205887.
+#> 5 02               PP           71112.           4     0       281822.
+#> 6 02               PSOE         62209.           4     0       281822.
 #> # ℹ 7 more variables: pct_sobre_validos <dbl>, divisor <int>, cociente <dbl>,
 #> #   order <int>, tipo <chr>, col <dbl>, dif <dbl>
 ```
@@ -533,6 +550,7 @@ head(resultado_dhondt)
 Agregar para obtener el total de escaños por partido:
 
 ``` r
+
 escanos_por_partido <- resultado_dhondt %>%
   filter(tipo == "Asignado") %>%
   count(partido, name = "escanos") %>%
@@ -542,17 +560,17 @@ escanos_por_partido
 #> # A tibble: 12 × 2
 #>    partido  escanos
 #>    <chr>      <int>
-#>  1 PSOE         121
-#>  2 PP           120
-#>  3 Vox           72
-#>  4 Sumar         16
+#>  1 PP           127
+#>  2 PSOE         126
+#>  3 Vox           62
+#>  4 Sumar         10
 #>  5 ERC            7
-#>  6 Podemos        4
-#>  7 CCa            3
-#>  8 EH Bildu       3
-#>  9 BNG            1
-#> 10 Junts          1
-#> 11 PNV            1
+#>  6 EH Bildu       6
+#>  7 Podemos        5
+#>  8 BNG            2
+#>  9 PNV            2
+#> 10 CCa            1
+#> 11 Junts          1
 #> 12 UPN            1
 cat("Total escaños asignados:", sum(escanos_por_partido$escanos), "\n")
 #> Total escaños asignados: 350
@@ -566,6 +584,7 @@ que orquesta todos los pasos anteriores automáticamente. Lee desde un
 archivo Excel, así que vamos a crear uno usando la función de plantilla:
 
 ``` r
+
 # Crear un proyecto temporal
 tmp_dir <- tempdir()
 project_dir <- file.path(tmp_dir, "tutorial_proyecto")

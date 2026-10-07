@@ -14,11 +14,13 @@ mínima usando los datasets incluidos en el paquete.
 ## Instalación
 
 ``` r
+
 # Instalar desde GitHub
 devtools::install_github("hmeleiro/vota")
 ```
 
 ``` r
+
 library(vota)
 ```
 
@@ -36,6 +38,7 @@ recuerdo de voto (`recuerdo`) e intención de voto actual (`idv`), junto
 con el porcentaje de transferencia entre ambos.
 
 ``` r
+
 data(mt)
 head(mt)
 #> # A tibble: 6 × 8
@@ -55,6 +58,7 @@ Totales oficiales de votos de las elecciones 23J, usados como base para
 los ajustes demográficos y la redistribución de votantes.
 
 ``` r
+
 data(votos_23J)
 votos_23J
 #> # A tibble: 6 × 2
@@ -74,6 +78,7 @@ Distribuciones históricas de voto por provincia, usadas para proyectar
 estimaciones nacionales al nivel provincial.
 
 ``` r
+
 data(patrones_23J)
 head(patrones_23J)
 #> # A tibble: 6 × 17
@@ -95,6 +100,7 @@ El número de escaños al Congreso asignados a cada una de las 52
 circunscripciones electorales de España.
 
 ``` r
+
 data(n_seats)
 head(n_seats)
 #> # A tibble: 6 × 2
@@ -114,6 +120,7 @@ Ajustes discrecionales opcionales – sumar o restar votos a partidos
 específicos basándose en conocimiento externo.
 
 ``` r
+
 data(retoques)
 retoques
 #> # A tibble: 2 × 2
@@ -129,6 +136,7 @@ Estimaciones de voto para partidos demasiado pequeños para modelar en la
 matriz de transferencia pero relevantes para el resultado global.
 
 ``` r
+
 data(small_parties)
 small_parties
 #> # A tibble: 3 × 2
@@ -145,6 +153,7 @@ La forma más fácil de iniciar una simulación es crear una estructura de
 proyecto:
 
 ``` r
+
 setup_electoral_project("mi_simulacion_2024")
 ```
 
@@ -158,6 +167,7 @@ Esto crea:
 Alternativamente, puedes generar solo la plantilla Excel:
 
 ``` r
+
 create_input_template("input/input.xlsx")
 ```
 
@@ -168,6 +178,7 @@ pipeline completo con
 [`run_vota()`](https://vota.spainelectoralproject.com/reference/run_vota.md):
 
 ``` r
+
 resultados <- run_vota(
   input_path = "input/input.xlsx",
   output_file = "output/resultados.rds",
@@ -200,6 +211,7 @@ La función devuelve un objeto `electo_fit` que contiene:
 ## Inspeccionar Resultados
 
 ``` r
+
 # Vista rápida
 print(resultados)
 
@@ -217,6 +229,7 @@ El objeto `electo_fit` tiene un método
 cuatro tipos de visualización:
 
 ``` r
+
 # Porcentajes de voto nacionales con intervalos de confianza
 plot(resultados, "nacional")
 

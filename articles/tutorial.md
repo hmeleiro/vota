@@ -9,6 +9,7 @@ as a black box, we’ll call each function individually to understand what
 happens at each stage.
 
 ``` r
+
 library(vota)
 library(dplyr)
 #> 
@@ -32,6 +33,7 @@ recall party. The last column (`idv == "N"`) provides the sample size
 for each column (vote recall).
 
 ``` r
+
 data(mt)
 mt
 #> # A tibble: 15 × 8
@@ -66,6 +68,7 @@ previous party now intend to vote PP.
 2023 election:
 
 ``` r
+
 data(votos_23J)
 votos_23J
 #> # A tibble: 6 × 2
@@ -88,6 +91,7 @@ counts.
 (as a proportion between 0 and 1):
 
 ``` r
+
 data(patrones_23J)
 head(patrones_23J, 12)
 #> # A tibble: 12 × 17
@@ -119,6 +123,7 @@ cat("Parties:", length(unique(patrones_23J$partido)), "\n")
 ### Seats per Province
 
 ``` r
+
 data(n_seats)
 head(n_seats)
 #> # A tibble: 6 × 2
@@ -137,6 +142,7 @@ cat("Total seats:", sum(n_seats$n_diputados), "\n")
 ### Optional: Adjustments and Small Parties
 
 ``` r
+
 data(retoques)
 retoques
 #> # A tibble: 2 × 2
@@ -164,6 +170,7 @@ function needs the transfer matrix in long format with columns
 wide `mt` dataset.
 
 ``` r
+
 # Convert wide mt to long format
 party_cols <- setdiff(names(mt), c("idv", "n"))
 
@@ -223,6 +230,7 @@ resampling. Each simulation draws from the sample distribution, creating
 natural variability.
 
 ``` r
+
 mt_sims <- simulate_mt(mt_long, nsims = 5, seed = 42)
 
 # sim = 0 is the original (unperturbed) matrix
@@ -251,6 +259,7 @@ function takes a single transfer matrix (in long format with `recuerdo`,
 run it on the original matrix (`sim = 0`):
 
 ``` r
+
 # Get the original (sim=0) transfer matrix
 mt_original <- mt_sims %>% filter(sim == 0)
 
@@ -294,6 +303,7 @@ are absolute vote counts.
 We can compute vote percentages:
 
 ``` r
+
 estimacion <- result$estimacion %>%
   mutate(pct = votos / sum(votos) * 100) %>%
   arrange(desc(pct))
@@ -326,6 +336,7 @@ To quantify uncertainty, we run
 each simulated transfer matrix:
 
 ``` r
+
 all_estimates <- lapply(unique(mt_sims$sim), function(s) {
   mt_s <- mt_sims %>% filter(sim == s)
   res <- vota(
@@ -378,6 +389,7 @@ head(all_estimates, n = 20)
 Now we can see how estimates vary across simulations:
 
 ``` r
+
 summary_stats <- all_estimates %>%
   group_by(idv) %>%
   summarise(
@@ -412,11 +424,13 @@ summary_stats
 ## Step 6: Provincial Projection
 
 National estimates need to be distributed across Spain’s 52 provinces
-using historical voting patterns. The
+using historical voting patterns. For `sim = 0`,
 [`simulate_prov_votes()`](https://vota.spainelectoralproject.com/reference/simulate_prov_votes.md)
-function does this using a Dirichlet distribution:
+uses the deterministic method: it applies the original patterns without
+perturbation and without Dirichlet or multinomial draws.
 
 ``` r
+
 # Use the point estimate (sim=0)
 estimacion_nacional <- result$estimacion
 
@@ -431,31 +445,32 @@ patrones_filtrados <- patrones_23J %>%
   mutate(patron = patron / 100) %>%
   filter(patron > 0)
 
-# Simulate provincial vote distribution
+# Project the point estimate deterministically
 prov_votes <- simulate_prov_votes(
   patrones = patrones_filtrados,
   estimacion = estimacion_nacional,
-  method = "dirichlet",
-  tau = 300,
-  seed = 42
+  method = "deterministic"
 )
 
 # Result is a matrix: provinces (rows) x parties (columns)
 dim(prov_votes)
 #> [1] 52 15
 head(prov_votes[, 1:4])
-#>      ABNL EH Bildu ERC Junts
-#> 01 150182    20276   0     0
-#> 02  38243        0   0     0
-#> 03 356715        0   0     0
-#> 04  70118        0   0     0
-#> 05  83491        0   0     0
-#> 06 125451        0   0     0
+#>         ABNL EH Bildu ERC Junts
+#> 01  86221.01 19402.82   0     0
+#> 02  81609.95     0.00   0     0
+#> 03 375341.32     0.00   0     0
+#> 04 157144.65     0.00   0     0
+#> 05  32027.12     0.00   0     0
+#> 06 152439.19     0.00   0     0
 ```
 
-Each cell contains the simulated number of votes for that party in that
-province. The `tau` parameter controls how closely the provincial
-distribution follows the historical pattern (higher = less variability).
+Each cell contains the expected number of votes for that party in that
+province. The result does not depend on `seed`, `tau`, or the
+random-number generator state. For `sim > 0`, the pipeline continues to
+use the Dirichlet method and multinomial allocation; in those
+simulations, `tau` controls how closely the provincial distribution
+follows the historical pattern (higher = less variability).
 
 ## Step 7: D’Hondt Seat Allocation
 
@@ -464,6 +479,7 @@ the data in the format expected by
 [`fast_dhondt()`](https://vota.spainelectoralproject.com/reference/fast_dhondt.md):
 
 ``` r
+
 # Convert provincial votes matrix to long format
 prov_df <- as.data.frame(prov_votes) %>%
   mutate(codigo_provincia = rownames(prov_votes)) %>%
@@ -488,19 +504,20 @@ prov_df <- as.data.frame(prov_votes) %>%
 head(prov_df)
 #> # A tibble: 6 × 7
 #>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
-#>   <chr>            <chr>         <int>       <dbl> <int>         <int>
-#> 1 01               ABNL         150182           4     0        281862
-#> 2 01               EH Bildu      20276           4     0        281862
-#> 3 01               ERC               0           4     0        281862
-#> 4 01               Junts             0           4     0        281862
-#> 5 01               OTBL           1861           4     0        281862
-#> 6 01               PNV            7882           4     0        281862
+#>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
+#> 1 01               ABNL         86221.           4     0       205887.
+#> 2 01               EH Bildu     19403.           4     0       205887.
+#> 3 01               ERC              0            4     0       205887.
+#> 4 01               Junts            0            4     0       205887.
+#> 5 01               OTBL          3939.           4     0       205887.
+#> 6 01               PNV           8493.           4     0       205887.
 #> # ℹ 1 more variable: pct_sobre_validos <dbl>
 ```
 
 Apply the electoral threshold (3%) and run D’Hondt:
 
 ``` r
+
 # Filter parties that pass the threshold
 prov_above_threshold <- prov_df %>%
   filter(!partido %in% c("OTBL", "ABNL"), pct_sobre_validos >= 0.03)
@@ -518,13 +535,13 @@ dhondt_result <- fast_dhondt(
 head(dhondt_result)
 #> # A tibble: 6 × 13
 #>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
-#>   <chr>            <chr>         <int>       <dbl> <int>         <int>
-#> 1 01               PP            53234           4     0        281862
-#> 2 01               PP            53234           4     0        281862
-#> 3 01               Vox           26581           4     0        281862
-#> 4 01               EH Bildu      20276           4     0        281862
-#> 5 02               PP           134157           4     0        287853
-#> 6 02               Vox           79180           4     0        287853
+#>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
+#> 1 01               PSOE         38058.           4     0       205887.
+#> 2 01               PP           24191.           4     0       205887.
+#> 3 01               EH Bildu     19403.           4     0       205887.
+#> 4 01               PSOE         38058.           4     0       205887.
+#> 5 02               PP           71112.           4     0       281822.
+#> 6 02               PSOE         62209.           4     0       281822.
 #> # ℹ 7 more variables: pct_sobre_validos <dbl>, divisor <int>, cociente <dbl>,
 #> #   order <int>, tipo <chr>, col <dbl>, dif <dbl>
 ```
@@ -532,6 +549,7 @@ head(dhondt_result)
 Aggregate to get total seats per party:
 
 ``` r
+
 seats_by_party <- dhondt_result %>%
   filter(tipo == "Asignado") %>%
   count(partido, name = "seats") %>%
@@ -541,17 +559,17 @@ seats_by_party
 #> # A tibble: 12 × 2
 #>    partido  seats
 #>    <chr>    <int>
-#>  1 PP         130
-#>  2 PSOE       116
-#>  3 Vox         63
-#>  4 Sumar       14
-#>  5 EH Bildu     7
-#>  6 ERC          7
-#>  7 Podemos      6
-#>  8 Junts        2
+#>  1 PP         127
+#>  2 PSOE       126
+#>  3 Vox         62
+#>  4 Sumar       10
+#>  5 ERC          7
+#>  6 EH Bildu     6
+#>  7 Podemos      5
+#>  8 BNG          2
 #>  9 PNV          2
-#> 10 BNG          1
-#> 11 CCa          1
+#> 10 CCa          1
+#> 11 Junts        1
 #> 12 UPN          1
 cat("Total seats assigned:", sum(seats_by_party$seats), "\n")
 #> Total seats assigned: 350
@@ -565,6 +583,7 @@ which orchestrates all of the above steps automatically. It reads from
 an Excel file, so let’s create one using the template function:
 
 ``` r
+
 # Create a temporary project
 tmp_dir <- tempdir()
 project_dir <- file.path(tmp_dir, "tutorial_project")

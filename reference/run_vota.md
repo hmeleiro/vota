@@ -18,7 +18,7 @@ run_vota(
   factor_correccion_otbl = 3,
   tiempo_entre_elecciones = 0.1,
   district_col,
-  tau = 300,
+  tau = 800,
   umbral = 0.03,
   tipo_umbral = "provincial",
   interval_level = 0.9,

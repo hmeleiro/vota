@@ -13,11 +13,13 @@ using the package’s included datasets.
 ## Installation
 
 ``` r
+
 # Install from GitHub
 devtools::install_github("hmeleiro/vota")
 ```
 
 ``` r
+
 library(vota)
 ```
 
@@ -35,6 +37,7 @@ vote now. Each row represents a combination of past party recall
 percentage transferring between them.
 
 ``` r
+
 data(mt)
 head(mt)
 #> # A tibble: 6 × 8
@@ -54,6 +57,7 @@ Official vote totals from the 23J election, used as the base for
 demographic adjustments and voter redistribution.
 
 ``` r
+
 data(votos_23J)
 votos_23J
 #> # A tibble: 6 × 2
@@ -73,6 +77,7 @@ Historical voting distributions by province, used to project national
 estimates to the provincial level.
 
 ``` r
+
 data(patrones_23J)
 head(patrones_23J)
 #> # A tibble: 6 × 17
@@ -94,6 +99,7 @@ The number of Congressional seats allocated to each of Spain’s 52
 electoral districts.
 
 ``` r
+
 data(n_seats)
 head(n_seats)
 #> # A tibble: 6 × 2
@@ -113,6 +119,7 @@ Optional expert adjustments – add or subtract votes from specific
 parties based on external knowledge.
 
 ``` r
+
 data(retoques)
 retoques
 #> # A tibble: 2 × 2
@@ -128,6 +135,7 @@ Vote estimates for parties too small to model in the transfer matrix but
 relevant for the overall picture.
 
 ``` r
+
 data(small_parties)
 small_parties
 #> # A tibble: 3 × 2
@@ -144,6 +152,7 @@ The easiest way to start a simulation is to scaffold a project
 directory:
 
 ``` r
+
 setup_electoral_project("my_simulation_2024")
 ```
 
@@ -156,6 +165,7 @@ This creates:
 Alternatively, generate just the Excel template:
 
 ``` r
+
 create_input_template("input/input.xlsx")
 ```
 
@@ -166,6 +176,7 @@ with
 [`run_vota()`](https://vota.spainelectoralproject.com/reference/run_vota.md):
 
 ``` r
+
 results <- run_vota(
   input_path = "input/input.xlsx",
   output_file = "output/results.rds",
@@ -197,6 +208,7 @@ The function returns an `electo_fit` object containing:
 ## Inspecting Results
 
 ``` r
+
 # Quick overview
 print(results)
 
@@ -214,6 +226,7 @@ The `electo_fit` object has a dedicated
 four visualization types:
 
 ``` r
+
 # National vote shares with confidence intervals
 plot(results, "nacional")
 

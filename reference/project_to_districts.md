@@ -64,10 +64,11 @@ simulations
 
 This process:
 
-1.  Applies district historical patterns to national estimates
+1.  Applies unperturbed district historical patterns to simulation 0
 
-2.  Adjusts by real electoral census of each district
+2.  Adds Dirichlet and multinomial uncertainty to simulations greater
+    than 0
 
-3.  Generates additional simulations with multinomial uncertainty
+3.  Adjusts by real electoral census of each district
 
 4.  Prepares data for D'Hondt allocation

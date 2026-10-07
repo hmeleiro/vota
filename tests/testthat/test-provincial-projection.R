@@ -105,8 +105,9 @@ test_that("simulation zero is deterministic throughout top-down projection", {
   expect_equal(baseline_1, baseline_2)
   expect_equal(
     baseline_1 %>%
-      dplyr::select(codigo_provincia, partido, votos_salida),
-    tibble::tibble(
+      dplyr::select(codigo_provincia, partido, votos_salida) %>%
+      as.data.frame(),
+    data.frame(
       codigo_provincia = c("01", "02", "02", "03", "03"),
       partido = c("A", "A", "B", "A", "B"),
       votos_salida = c(1000L, 800L, 1200L, 2000L, 1000L)

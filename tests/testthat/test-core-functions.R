@@ -98,6 +98,69 @@ test_that("vota algorithm processes transfer matrix correctly", {
     expect_true(nrow(result$estimacion) > 0) # Should have some results
 })
 
+test_that("vota redistributes undecided voters within each recall group", {
+    idv_values <- c("A", "B", "OTBL", "ABNL", "Indecisos")
+    make_recall_group <- function(recuerdo, transfer) {
+        data.frame(
+            sim = 0,
+            n = 1,
+            recuerdo = recuerdo,
+            idv = idv_values,
+            transfer = transfer
+        )
+    }
+
+    mt_data <- dplyr::bind_rows(
+        make_recall_group("A", c(0.6, 0.2, 0, 0, 0.2)),
+        make_recall_group("B", c(0.2, 0.6, 0, 0, 0.2)),
+        make_recall_group("ABNL", c(0, 0, 0, 1, 0)),
+        make_recall_group("OTBL", c(0, 0, 1, 0, 0))
+    )
+    votos_ant <- data.frame(
+        recuerdo = c("A", "B", "ABNL", "OTBL"),
+        votos_ant = c(1000, 100, 0, 0)
+    )
+
+    result <- vota(
+        mt_simplificada = mt_data,
+        tiempo_entre_elecciones = 0,
+        factor_correccion_abstencion = 1,
+        factor_correccion_jovenes = 1,
+        factor_correccion_otbl = 1,
+        votos_ant = votos_ant
+    )
+
+    redistributed <- result$mt %>%
+        dplyr::filter(recuerdo %in% c("A", "B"))
+
+    totals <- redistributed %>%
+        dplyr::group_by(recuerdo) %>%
+        dplyr::summarise(electores = sum(electores), .groups = "drop") %>%
+        dplyr::arrange(recuerdo)
+    expect_equal(totals$electores, c(1000, 100))
+
+    expected <- data.frame(
+        recuerdo = c("A", "A", "A", "B", "B", "B"),
+        idv = c("A", "B", "ABNL", "A", "B", "ABNL"),
+        electores = c(720, 240, 40, 24, 72, 4)
+    )
+    actual <- redistributed %>%
+        dplyr::filter(electores > 0) %>%
+        dplyr::arrange(recuerdo, factor(idv, levels = c("A", "B", "ABNL"))) %>%
+        dplyr::select(recuerdo, idv, electores) %>%
+        as.data.frame()
+    expect_equal(actual, expected)
+
+    decided_shares <- redistributed %>%
+        dplyr::filter(idv %in% c("A", "B")) %>%
+        dplyr::group_by(recuerdo) %>%
+        dplyr::mutate(share = electores / sum(electores)) %>%
+        dplyr::ungroup() %>%
+        dplyr::arrange(recuerdo, idv) %>%
+        dplyr::pull(share)
+    expect_equal(decided_shares, c(0.75, 0.25, 0.25, 0.75))
+})
+
 test_that("strategy dispatcher preserves absent optional inputs", {
     mt_data <- create_test_mt()
     votos_ant <- create_test_votos_ant()

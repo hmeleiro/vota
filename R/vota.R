@@ -78,6 +78,7 @@ vota <- function(mt_simplificada,
     mt_electores <-
       mt_electores %>%
       left_join(indecisos, by = join_by(recuerdo)) %>%
+      group_by(recuerdo) %>%
       mutate(
         asignacion = indecisos * electores / sum(electores, na.rm = T),
         idv2 = if_else(idv == "Indecisos", "ABNL", idv)

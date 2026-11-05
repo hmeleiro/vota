@@ -63,12 +63,13 @@
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Data frame with valid small parties containing columns:
-idv, votos (and codigo_provincia if strategy is "bottom_up")</p>
+    <p>Data frame with valid small parties containing columns <code>idv</code> and
+<code>votos</code> (and <code>codigo_provincia</code> if strategy is "bottom_up"), or <code>NULL</code> if
+the sheet is absent.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The 'small_parties' sheet must contain:</p><ul><li><p>Column 'idv' with party codes</p></li>
+    <p>The optional 'small_parties' sheet, when present, must contain:</p><ul><li><p>Column 'idv' with party codes</p></li>
 <li><p>Column 'votos' with vote estimates</p></li>
 <li><p>Column 'codigo_provincia' if strategy is "bottom_up"</p></li>
 <li><p>Only rows with votos != 0 and != NA are included</p></li>

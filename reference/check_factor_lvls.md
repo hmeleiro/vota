@@ -10,7 +10,9 @@ check_factor_lvls(
   recuerdo_var = NULL,
   recuerdo_lvls = NULL,
   idv_var = NULL,
-  idv_lvls = NULL
+  idv_lvls = NULL,
+  recuerdo_allowed_lvls = recuerdo_lvls,
+  idv_allowed_lvls = idv_lvls
 )
 ```
 
@@ -31,6 +33,14 @@ check_factor_lvls(
 - idv_lvls:
 
   Vector con niveles validos de IDV (opcional)
+
+- recuerdo_allowed_lvls:
+
+  Niveles de recuerdo permitidos además de los requeridos (opcional)
+
+- idv_allowed_lvls:
+
+  Niveles de IDV permitidos además de los requeridos (opcional)
 
 ## Value
 

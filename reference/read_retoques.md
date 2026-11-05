@@ -14,14 +14,18 @@ read_retoques(path, strategy = c("top_down", "bottom_up"))
 
   Path to Excel file
 
+- strategy:
+
+  Modeling strategy: "top_down" or "bottom_up"
+
 ## Value
 
-Data frame with valid adjustments containing columns: idv,
-votos_adicionales
+Data frame with valid adjustments containing columns `idv` and
+`votos_adicionales`, or `NULL` if the sheet is absent.
 
 ## Details
 
-The 'retoques' sheet must contain:
+The optional 'retoques' sheet, when present, must contain:
 
 - Column 'idv' with party names
 

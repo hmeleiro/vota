@@ -282,20 +282,20 @@ resultado$estimacion %>%
 #> # A tibble: 15 × 2
 #>    idv          votos
 #>    <chr>        <dbl>
-#>  1 ABNL     10927917.
-#>  2 PP        6486123.
-#>  3 PSOE      6355227.
-#>  4 Vox       3780625.
-#>  5 Sumar     1493472.
-#>  6 OTBL       906063.
-#>  7 Podemos    881679.
-#>  8 SALF       377051.
-#>  9 ERC        345678.
-#> 10 EH Bildu   196936.
-#> 11 Junts      157092.
+#>  1 ABNL     11836387.
+#>  2 PSOE      7068734.
+#>  3 PP        6943188.
+#>  4 Vox       3998990.
+#>  5 Sumar     1703765.
+#>  6 OTBL      1018487.
+#>  7 Podemos   1008165.
+#>  8 ERC        405482.
+#>  9 SALF       398480.
+#> 10 EH Bildu   228060.
+#> 11 Junts      185460.
 #> 12 BNG        152327 
 #> 13 CCa        114718 
-#> 14 PNV         83840.
+#> 14 PNV         99090.
 #> 15 UPN         51764
 ```
 
@@ -314,21 +314,21 @@ estimacion
 #> # A tibble: 15 × 3
 #>    idv          votos    pct
 #>    <chr>        <dbl>  <dbl>
-#>  1 ABNL     10927917. 33.8  
-#>  2 PP        6486123. 20.1  
-#>  3 PSOE      6355227. 19.7  
-#>  4 Vox       3780625. 11.7  
-#>  5 Sumar     1493472.  4.62 
-#>  6 OTBL       906063.  2.80 
-#>  7 Podemos    881679.  2.73 
-#>  8 SALF       377051.  1.17 
-#>  9 ERC        345678.  1.07 
-#> 10 EH Bildu   196936.  0.610
-#> 11 Junts      157092.  0.486
-#> 12 BNG        152327   0.471
-#> 13 CCa        114718   0.355
-#> 14 PNV         83840.  0.259
-#> 15 UPN         51764   0.160
+#>  1 ABNL     11836387. 33.6  
+#>  2 PSOE      7068734. 20.1  
+#>  3 PP        6943188. 19.7  
+#>  4 Vox       3998990. 11.4  
+#>  5 Sumar     1703765.  4.84 
+#>  6 OTBL      1018487.  2.89 
+#>  7 Podemos   1008165.  2.86 
+#>  8 ERC        405482.  1.15 
+#>  9 SALF       398480.  1.13 
+#> 10 EH Bildu   228060.  0.648
+#> 11 Junts      185460.  0.527
+#> 12 BNG        152327   0.433
+#> 13 CCa        114718   0.326
+#> 14 PNV         99090.  0.281
+#> 15 UPN         51764   0.147
 ```
 
 ## Paso 5: Ejecutar VOTA en Todas las Simulaciones
@@ -366,26 +366,26 @@ head(todas_estimaciones, n = 20)
 #> # A tibble: 20 × 4
 #>    idv          votos   sim    pct
 #>    <chr>        <dbl> <dbl>  <dbl>
-#>  1 ABNL     10927917.     0 33.8  
-#>  2 EH Bildu   196936.     0  0.610
-#>  3 ERC        345678.     0  1.07 
-#>  4 Junts      157092.     0  0.486
-#>  5 OTBL       906063.     0  2.80 
-#>  6 PNV         83840.     0  0.259
-#>  7 PP        6486123.     0 20.1  
-#>  8 PSOE      6355227.     0 19.7  
-#>  9 Podemos    881679.     0  2.73 
-#> 10 SALF       377051.     0  1.17 
-#> 11 Sumar     1493472.     0  4.62 
-#> 12 Vox       3780625.     0 11.7  
-#> 13 BNG        152327      0  0.471
-#> 14 CCa        114718      0  0.355
-#> 15 UPN         51764      0  0.160
-#> 16 ABNL     10464779.     1 33.1  
-#> 17 EH Bildu  1987601.     1  6.29 
-#> 18 ERC       2051504.     1  6.50 
-#> 19 Junts     1993972.     1  6.31 
-#> 20 OTBL       814974.     1  2.58
+#>  1 ABNL     11836387.     0 33.6  
+#>  2 EH Bildu   228060.     0  0.648
+#>  3 ERC        405482.     0  1.15 
+#>  4 Junts      185460.     0  0.527
+#>  5 OTBL      1018487.     0  2.89 
+#>  6 PNV         99090.     0  0.281
+#>  7 PP        6943188.     0 19.7  
+#>  8 PSOE      7068734.     0 20.1  
+#>  9 Podemos   1008165.     0  2.86 
+#> 10 SALF       398480.     0  1.13 
+#> 11 Sumar     1703765.     0  4.84 
+#> 12 Vox       3998990.     0 11.4  
+#> 13 BNG        152327      0  0.433
+#> 14 CCa        114718      0  0.326
+#> 15 UPN         51764      0  0.147
+#> 16 ABNL     10854879.     1 32.8  
+#> 17 EH Bildu  2091588.     1  6.33 
+#> 18 ERC       2157660.     1  6.53 
+#> 19 Junts     2098097.     1  6.34 
+#> 20 OTBL       857199.     1  2.59
 ```
 
 Ahora podemos ver cómo varían las estimaciones entre simulaciones:
@@ -406,21 +406,21 @@ estadisticos
 #> # A tibble: 15 × 4
 #>    idv      pct_mediana pct_inf pct_sup
 #>    <chr>          <dbl>   <dbl>   <dbl>
-#>  1 ABNL          33.0    32.9    33.7  
-#>  2 SALF           6.48    2.48    6.56 
-#>  3 ERC            6.43    2.39    6.63 
-#>  4 PSOE           6.43    6.39   16.4  
-#>  5 PNV            6.41    1.79    6.55 
-#>  6 PP             6.39    6.36   16.7  
-#>  7 Sumar          6.39    5.05    6.50 
-#>  8 Podemos        6.34    3.61    6.48 
-#>  9 Junts          6.34    1.94    6.55 
-#> 10 EH Bildu       6.30    2.01    6.39 
-#> 11 Vox            5.57    5.47   10.2  
-#> 12 OTBL           2.59    2.55    2.75 
-#> 13 BNG            0.482   0.474   0.482
-#> 14 CCa            0.363   0.357   0.363
-#> 15 UPN            0.164   0.161   0.164
+#>  1 ABNL          32.7    32.6    33.4  
+#>  2 SALF           6.51    2.46    6.60 
+#>  3 ERC            6.46    2.46    6.67 
+#>  4 PSOE           6.46    6.42   16.7  
+#>  5 PNV            6.44    1.82    6.58 
+#>  6 PP             6.42    6.39   16.5  
+#>  7 Sumar          6.42    5.22    6.53 
+#>  8 Podemos        6.37    3.72    6.52 
+#>  9 Junts          6.37    1.98    6.58 
+#> 10 EH Bildu       6.33    2.04    6.42 
+#> 11 Vox            5.64    5.54   10.00 
+#> 12 OTBL           2.60    2.56    2.82 
+#> 13 BNG            0.460   0.439   0.461
+#> 14 CCa            0.346   0.331   0.347
+#> 15 UPN            0.156   0.149   0.157
 ```
 
 ## Paso 6: Proyección Provincial
@@ -459,12 +459,12 @@ dim(votos_prov)
 #> [1] 52 15
 head(votos_prov[, 1:4])
 #>         ABNL EH Bildu ERC Junts
-#> 01  86221.01 19402.82   0     0
-#> 02  81609.95     0.00   0     0
-#> 03 375341.32     0.00   0     0
-#> 04 157144.65     0.00   0     0
-#> 05  32027.12     0.00   0     0
-#> 06 152439.19     0.00   0     0
+#> 01  93388.82 22469.27   0     0
+#> 02  88394.42     0.00   0     0
+#> 03 406544.56     0.00   0     0
+#> 04 170208.56     0.00   0     0
+#> 05  34689.63     0.00   0     0
+#> 06 165111.91     0.00   0     0
 ```
 
 Cada celda contiene el número esperado de votos para ese partido en esa
@@ -506,12 +506,12 @@ head(prov_df)
 #> # A tibble: 6 × 7
 #>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
 #>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
-#> 1 01               ABNL         86221.           4     0       205887.
-#> 2 01               EH Bildu     19403.           4     0       205887.
-#> 3 01               ERC              0            4     0       205887.
-#> 4 01               Junts            0            4     0       205887.
-#> 5 01               OTBL          3939.           4     0       205887.
-#> 6 01               PNV           8493.           4     0       205887.
+#> 1 01               ABNL         93389.           4     0       227027.
+#> 2 01               EH Bildu     22469.           4     0       227027.
+#> 3 01               ERC              0            4     0       227027.
+#> 4 01               Junts            0            4     0       227027.
+#> 5 01               OTBL          4428.           4     0       227027.
+#> 6 01               PNV          10038.           4     0       227027.
 #> # ℹ 1 more variable: pct_sobre_validos <dbl>
 ```
 
@@ -537,12 +537,12 @@ head(resultado_dhondt)
 #> # A tibble: 6 × 13
 #>   codigo_provincia partido  votos_prov n_diputados   sim votos_validos
 #>   <chr>            <chr>         <dbl>       <dbl> <int>         <dbl>
-#> 1 01               PSOE         38058.           4     0       205887.
-#> 2 01               PP           24191.           4     0       205887.
-#> 3 01               EH Bildu     19403.           4     0       205887.
-#> 4 01               PSOE         38058.           4     0       205887.
-#> 5 02               PP           71112.           4     0       281822.
-#> 6 02               PSOE         62209.           4     0       281822.
+#> 1 01               PSOE         42331.           4     0       227027.
+#> 2 01               PP           25896.           4     0       227027.
+#> 3 01               EH Bildu     22469.           4     0       227027.
+#> 4 01               PSOE         42331.           4     0       227027.
+#> 5 02               PP           76123.           4     0       305854.
+#> 6 02               PSOE         69193.           4     0       305854.
 #> # ℹ 7 more variables: pct_sobre_validos <dbl>, divisor <int>, cociente <dbl>,
 #> #   order <int>, tipo <chr>, col <dbl>, dif <dbl>
 ```
@@ -560,17 +560,17 @@ escanos_por_partido
 #> # A tibble: 12 × 2
 #>    partido  escanos
 #>    <chr>      <int>
-#>  1 PP           127
-#>  2 PSOE         126
-#>  3 Vox           62
-#>  4 Sumar         10
+#>  1 PP           126
+#>  2 PSOE         125
+#>  3 Vox           61
+#>  4 Sumar         12
 #>  5 ERC            7
 #>  6 EH Bildu       6
 #>  7 Podemos        5
 #>  8 BNG            2
-#>  9 PNV            2
-#> 10 CCa            1
-#> 11 Junts          1
+#>  9 Junts          2
+#> 10 PNV            2
+#> 11 CCa            1
 #> 12 UPN            1
 cat("Total escaños asignados:", sum(escanos_por_partido$escanos), "\n")
 #> Total escaños asignados: 350

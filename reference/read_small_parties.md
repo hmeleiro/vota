@@ -21,12 +21,13 @@ read_small_parties(path, strategy = c("top_down", "bottom_up"))
 
 ## Value
 
-Data frame with valid small parties containing columns: idv, votos (and
-codigo_provincia if strategy is "bottom_up")
+Data frame with valid small parties containing columns `idv` and `votos`
+(and `codigo_provincia` if strategy is "bottom_up"), or `NULL` if the
+sheet is absent.
 
 ## Details
 
-The 'small_parties' sheet must contain:
+The optional 'small_parties' sheet, when present, must contain:
 
 - Column 'idv' with party codes
 

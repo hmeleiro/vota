@@ -98,6 +98,40 @@ test_that("vota algorithm processes transfer matrix correctly", {
     expect_true(nrow(result$estimacion) > 0) # Should have some results
 })
 
+test_that("strategy dispatcher preserves absent optional inputs", {
+    mt_data <- create_test_mt()
+    votos_ant <- create_test_votos_ant()
+
+    top_down <- execute_vota(
+        strategy = "top_down",
+        mt_sims = mt_data,
+        factor_correccion_abstencion = 3,
+        factor_correccion_jovenes = 2.5,
+        factor_correccion_otbl = 2.5,
+        tiempo_entre_elecciones = 4,
+        retoques = NULL,
+        small_parties = NULL,
+        votos_ant = votos_ant,
+        district_col = "codigo_provincia"
+    )
+
+    bottom_up <- execute_vota(
+        strategy = "bottom_up",
+        mt_sims = dplyr::mutate(mt_data, codigo_provincia = "28", .after = sim),
+        factor_correccion_abstencion = 3,
+        factor_correccion_jovenes = 2.5,
+        factor_correccion_otbl = 2.5,
+        tiempo_entre_elecciones = 4,
+        retoques = NULL,
+        small_parties = NULL,
+        votos_ant = dplyr::mutate(votos_ant, codigo_provincia = "28", .before = 1),
+        district_col = "codigo_provincia"
+    )
+
+    expect_true(nrow(top_down$estimacion_previa_sims) > 0)
+    expect_true(nrow(bottom_up$estimacion_previa_sims) > 0)
+})
+
 test_that("vota fails with invalid mt_simplificada", {
     invalid_mt <- "not a data frame"
     votos_ant <- create_test_votos_ant()

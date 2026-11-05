@@ -39,7 +39,7 @@ to another. Special categories include:
 
 data(mt)
 str(mt)
-#> tibble [15 × 8] (S3: tbl_df/tbl/data.frame)
+#> tibble [15 x 8] (S3: tbl_df/tbl/data.frame)
 #>  $ idv  : chr [1:15] "PSOE" "PP" "Vox" "Sumar" ...
 #>  $ PSOE : num [1:15] 67.74 2.57 1.28 2.81 1.22 ...
 #>  $ PP   : num [1:15] 0.898 68.754 12.677 0 0 ...
@@ -141,20 +141,24 @@ function:
 
 1.  **Historical patterns** from `patrones_23J` define the expected
     provincial distribution of each party
-2.  **Dirichlet simulation** adds variability: for each party,
-    provincial shares are drawn from a Dirichlet distribution centered
-    on the historical pattern, with concentration parameter `tau`
-    - Higher `tau` (e.g., 500) = less provincial variability
-    - Lower `tau` (e.g., 100) = more provincial variability
-3.  **Multinomial allocation** distributes total national votes across
-    province-party cells
+2.  **Simulation 0** uses those patterns without perturbation or
+    smoothing and assigns the expected value to each province. It is
+    therefore the fully deterministic point projection
+3.  For simulations with `sim > 0`, **Dirichlet simulation** adds
+    variability: for each party, provincial shares are drawn from a
+    Dirichlet distribution centered on the historical pattern, with
+    concentration parameter `tau`
+    - Higher `tau` (e.g., 800) = less provincial variability
+    - Lower `tau` (e.g., 400) = more provincial variability
+4.  **Multinomial allocation** distributes total national votes across
+    province-party cells only for `sim > 0`
 
 ``` r
 
 data(patrones_23J)
 # Provincial patterns: each party's historical vote share by province
 head(patrones_23J)
-#> # A tibble: 6 × 17
+#> # A tibble: 6 x 17
 #>   codigo_provincia  PSOE    PP   Vox Sumar   ERC Junts   CUP   PNV `EH Bildu`
 #>   <chr>            <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>      <dbl>
 #> 1 01               0.599 0.373 0.210 0.710     0     0     0  10.1       9.85
@@ -163,7 +167,7 @@ head(patrones_23J)
 #> 4 04               1.19  1.63  2.19  0.701     0     0     0   0         0   
 #> 5 05               0.341 0.524 0.484 0.164     0     0     0   0         0   
 #> 6 06               1.97  1.84  1.72  0.882     0     0     0   0         0   
-#> # ℹ 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
+#> # i 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
 #> #   Podemos <dbl>, OTBL <dbl>, ABNL <dbl>
 ```
 

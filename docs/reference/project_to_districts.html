@@ -84,16 +84,20 @@ historical patterns and electoral census data.</p>
 <dd><p>Smoothing parameter for multinomial simulation (default 300)</p></dd>
 
 
+<dt id="arg-umbral">umbral<a class="anchor" aria-label="anchor" href="#arg-umbral"></a></dt>
+<dd><p>Electoral threshold (default 0.03)</p></dd>
+
+
+<dt id="arg-tipo-umbral">tipo_umbral<a class="anchor" aria-label="anchor" href="#arg-tipo-umbral"></a></dt>
+<dd><p>Type of threshold: "provincial", "autonomico" or "mixto" (default "provincial")</p></dd>
+
+
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Seed for reproducibility (optional)</p></dd>
 
 
 <dt id="arg-censo">censo<a class="anchor" aria-label="anchor" href="#arg-censo"></a></dt>
 <dd><p>Optional data frame with census data (columns: codigo_provincia, censo_real). If NULL, downloaded from INE.</p></dd>
-
-
-<dt id="arg-idv-lvls">idv_lvls<a class="anchor" aria-label="anchor" href="#arg-idv-lvls"></a></dt>
-<dd><p>Vector with IDV codes</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -102,9 +106,9 @@ historical patterns and electoral census data.</p>
     </div>
     <div class="section level2">
     <h2 id="detalles">Detalles<a class="anchor" aria-label="anchor" href="#detalles"></a></h2>
-    <p>This process:</p><ol><li><p>Applies district historical patterns to national estimates</p></li>
+    <p>This process:</p><ol><li><p>Applies unperturbed district historical patterns to simulation 0</p></li>
+<li><p>Adds Dirichlet and multinomial uncertainty to simulations greater than 0</p></li>
 <li><p>Adjusts by real electoral census of each district</p></li>
-<li><p>Generates additional simulations with multinomial uncertainty</p></li>
 <li><p>Prepares data for D'Hondt allocation</p></li>
 </ol></div>
 

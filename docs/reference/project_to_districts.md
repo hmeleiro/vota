@@ -37,6 +37,15 @@ project_to_districts(
 
   Smoothing parameter for multinomial simulation (default 300)
 
+- umbral:
+
+  Electoral threshold (default 0.03)
+
+- tipo_umbral:
+
+  Type of threshold: "provincial", "autonomico" or "mixto" (default
+  "provincial")
+
 - seed:
 
   Seed for reproducibility (optional)
@@ -45,10 +54,6 @@ project_to_districts(
 
   Optional data frame with census data (columns: codigo_provincia,
   censo_real). If NULL, downloaded from INE.
-
-- idv_lvls:
-
-  Vector with IDV codes
 
 ## Valor
 
@@ -59,10 +64,11 @@ simulations
 
 This process:
 
-1.  Applies district historical patterns to national estimates
+1.  Applies unperturbed district historical patterns to simulation 0
 
-2.  Adjusts by real electoral census of each district
+2.  Adds Dirichlet and multinomial uncertainty to simulations greater
+    than 0
 
-3.  Generates additional simulations with multinomial uncertainty
+3.  Adjusts by real electoral census of each district
 
 4.  Prepares data for D'Hondt allocation

@@ -127,6 +127,9 @@ La simulación espera un archivo Excel (`.xlsx`) con estas hojas:
 | `retoques` (opcional) | `idv`, `votos_adicionales` | Ajustes manuales de votos |
 | `small_parties` (opcional) | `idv`, `votos` | Estimaciones de voto de partidos pequeños |
 
+Las hojas opcionales pueden omitirse por completo. Cuando están presentes, se
+valida el esquema de columnas correspondiente a cada estrategia.
+
 Usa `create_input_template()` para generar una plantilla correctamente formateada con datos de ejemplo.
 
 ## Parámetros
@@ -156,4 +159,4 @@ Parámetros clave de `run_vota()`:
 
 ## Licencia
 
-MIT
+GPL (>= 3). Consulta [LICENSE.md](LICENSE.md) para leer el texto completo de la licencia.

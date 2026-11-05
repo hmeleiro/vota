@@ -12,14 +12,15 @@ read_small_parties(path, strategy = c("top_down", "bottom_up"))
 \item{strategy}{Modeling strategy: "top_down" or "bottom_up"}
 }
 \value{
-Data frame with valid small parties containing columns:
-idv, votos (and codigo_provincia if strategy is "bottom_up")
+Data frame with valid small parties containing columns \code{idv} and
+\code{votos} (and \code{codigo_provincia} if strategy is "bottom_up"), or \code{NULL} if
+the sheet is absent.
 }
 \description{
 Reads small parties data from the 'small_parties' sheet of the Excel file.
 }
 \details{
-The 'small_parties' sheet must contain:
+The optional 'small_parties' sheet, when present, must contain:
 \itemize{
 \item Column 'idv' with party codes
 \item Column 'votos' with vote estimates

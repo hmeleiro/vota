@@ -42,15 +42,15 @@
 <div id="vota-" class="section level1">
 
 <!-- badges: start -->
-<!-- badges: end -->
+<p><a href="https://cran.r-project.org" class="external-link"><img src="https://img.shields.io/badge/CRAN-not%20available-red.svg" alt="Not on CRAN"></a> <a href="https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a> <a href="https://www.gnu.org/licenses/gpl-3.0" class="external-link"><img src="https://img.shields.io/badge/License-GPL%20(%3E%3D%203)-blue.svg" alt="License: GPL (&gt;= 3)"></a> <!-- badges: end --></p>
 <p><a href="README.html">Read in English</a></p>
 <p><strong>vota</strong> es un paquete de R para simular resultados electorales en España. Proyecta datos de encuestas nacionales a asignaciones de escaños provinciales usando matrices de transferencia, métodos Monte Carlo y bootstrapping. Implementa el algoritmo <em>VOTA</em> (<strong>V</strong>ote <strong>O</strong>utcome <strong>T</strong>ransfer-based <strong>A</strong>lgorithm), específicamente diseñado para el sistema electoral español con el método D’Hondt.</p>
 <div class="section level2">
 <h2 id="instalación">Instalación<a class="anchor" aria-label="anchor" href="#instalaci%C3%B3n"></a></h2>
 <p>Puedes instalar la versión de desarrollo desde GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hmeleiro/vota"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"hmeleiro/vota"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="visión-general">Visión general<a class="anchor" aria-label="anchor" href="#visi%C3%B3n-general"></a></h2>
@@ -203,7 +203,8 @@
 <code>idv</code>, <code>votos</code>
 </td>
 <td>Estimaciones de voto de partidos pequeños</td>
-</tr></tbody></table><p>Usa <code><a href="reference/create_input_template.html">create_input_template()</a></code> para generar una plantilla correctamente formateada con datos de ejemplo.</p>
+</tr></tbody></table><p>Las hojas opcionales pueden omitirse por completo. Cuando están presentes, se valida el esquema de columnas correspondiente a cada estrategia.</p>
+<p>Usa <code><a href="reference/create_input_template.html">create_input_template()</a></code> para generar una plantilla correctamente formateada con datos de ejemplo.</p>
 </div>
 <div class="section level2">
 <h2 id="parámetros">Parámetros<a class="anchor" aria-label="anchor" href="#par%C3%A1metros"></a></h2>
@@ -237,7 +238,7 @@
 <td><code>0.1</code></td>
 <td>Años entre elecciones (ajuste demográfico)</td>
 </tr><tr><td><code>tau</code></td>
-<td><code>300</code></td>
+<td><code>800</code></td>
 <td>Concentración Dirichlet para proyección provincial</td>
 </tr><tr><td><code>umbral</code></td>
 <td><code>0.03</code></td>
@@ -267,7 +268,7 @@
 </ul></div>
 <div class="section level2">
 <h2 id="licencia">Licencia<a class="anchor" aria-label="anchor" href="#licencia"></a></h2>
-<p>MIT</p>
+<p>GPL (&gt;= 3). Consulta <a href="LICENSE.html">LICENSE.md</a> para leer el texto completo de la licencia.</p>
 </div>
 </div>
 

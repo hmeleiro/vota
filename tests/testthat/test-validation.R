@@ -155,6 +155,11 @@ test_that("check_retoques validates manual adjustments", {
     )
 })
 
+test_that("optional adjustment inputs validate when absent", {
+    expect_silent(check_retoques(NULL, c("PSOE", "PP")))
+    expect_silent(check_small_parties(NULL, c("PSOE", "PP")))
+})
+
 # test_that("check_retoques fails with invalid party codes", {
 #     invalid_retoques <- data.frame(
 #         idv = c("INVALID_PARTY"),

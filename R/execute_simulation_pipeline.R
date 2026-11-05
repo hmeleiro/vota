@@ -188,8 +188,6 @@ execute_vota <- function(strategy = c("top_down", "bottom_up"), ...) {
     stop("At least one argument must be provided")
   }
 
-  args <- args[!sapply(args, is.null)]
-
   # Ejecutar función apropiada
   result <- switch(strategy,
     "top_down" = {
@@ -296,11 +294,22 @@ execute_vota_bottom_up <- function(mt_sims, district_col, factor_correccion_abst
       mt_sims_prov_list <- split(mt_sim, mt_sim[, district_col])
 
       safe_map(mt_sims_prov_list, function(mt_sims_prov_sim) {
-        d <- pull(unique(mt_sims_prov_sim[, district_col]))
+        d <- unique(mt_sims_prov_sim[[district_col]])
+        if (length(d) != 1L) {
+          stop("Each district split must contain exactly one district code")
+        }
 
-        retoques <- retoques %>% filter(!!sym(district_col) == d)
-        small_parties <- small_parties %>% filter(!!sym(district_col) == d)
-        votos_ant <- votos_ant %>% filter(!!sym(district_col) == d)
+        district_retoques <- if (is.null(retoques)) {
+          NULL
+        } else {
+          filter(retoques, !!sym(district_col) == d)
+        }
+        district_small_parties <- if (is.null(small_parties)) {
+          NULL
+        } else {
+          filter(small_parties, !!sym(district_col) == d)
+        }
+        district_votos_ant <- filter(votos_ant, !!sym(district_col) == d)
 
         vota_out <-
           vota(
@@ -309,9 +318,9 @@ execute_vota_bottom_up <- function(mt_sims, district_col, factor_correccion_abst
             factor_correccion_abstencion = factor_correccion_abstencion,
             factor_correccion_jovenes = factor_correccion_jovenes,
             factor_correccion_otbl = factor_correccion_otbl,
-            retoques = retoques,
-            small_parties = small_parties,
-            votos_ant = votos_ant
+            retoques = district_retoques,
+            small_parties = district_small_parties,
+            votos_ant = district_votos_ant
           )
 
         vota_out$mt <- vota_out$mt %>%

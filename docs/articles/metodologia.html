@@ -120,7 +120,7 @@ elección anterior (nuevos votantes)</li>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mt</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">mt</span><span class="op">)</span></span>
-<span><span class="co">#&gt; tibble [15 × 8] (S3: tbl_df/tbl/data.frame)</span></span>
+<span><span class="co">#&gt; tibble [15 x 8] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ idv  : chr [1:15] "PSOE" "PP" "Vox" "Sumar" ...</span></span>
 <span><span class="co">#&gt;  $ PSOE : num [1:15] 67.74 2.57 1.28 2.81 1.22 ...</span></span>
 <span><span class="co">#&gt;  $ PP   : num [1:15] 0.898 68.754 12.677 0 0 ...</span></span>
@@ -233,10 +233,13 @@ función <code><a href="../reference/project_to_districts.html">project_to_distr
 <li>Los <strong>patrones históricos</strong> de
 <code>patrones_23J</code> definen la distribución provincial esperada de
 cada partido</li>
-<li>La <strong>simulación Dirichlet</strong> añade variabilidad: para
-cada partido, las cuotas provinciales se extraen de una distribución
-Dirichlet centrada en el patrón histórico, con parámetro de
-concentración <code>tau</code>
+<li>La <strong>simulación 0</strong> usa esos patrones sin perturbación
+ni suavizado y asigna a cada provincia el valor esperado. Por tanto,
+constituye la proyección puntual completamente determinista</li>
+<li>Para las simulaciones <code>sim &gt; 0</code>, la <strong>simulación
+Dirichlet</strong> añade variabilidad: para cada partido, las cuotas
+provinciales se extraen de una distribución Dirichlet centrada en el
+patrón histórico, con parámetro de concentración <code>tau</code>
 <ul>
 <li>Mayor <code>tau</code> (p.ej., 500) = menos variabilidad
 provincial</li>
@@ -245,13 +248,15 @@ provincial</li>
 </ul>
 </li>
 <li>La <strong>asignación multinomial</strong> distribuye los votos
-nacionales totales entre las celdas provincia-partido</li>
+nacionales totales entre las celdas provincia-partido únicamente para
+<code>sim &gt; 0</code>
+</li>
 </ol>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">patrones_23J</span><span class="op">)</span></span>
 <span><span class="co"># Patrones provinciales: cuota histórica de voto de cada partido por provincia</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">patrones_23J</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 17</span></span></span>
 <span><span class="co">#&gt;   codigo_provincia  PSOE    PP   Vox Sumar   ERC Junts   CUP   PNV `EH Bildu`</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               0.599 0.373 0.210 0.710     0     0     0  10.1       9.85</span></span>
@@ -260,7 +265,7 @@ nacionales totales entre las celdas provincia-partido</li>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 04               1.19  1.63  2.19  0.701     0     0     0   0         0   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 05               0.341 0.524 0.484 0.164     0     0     0   0         0   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 06               1.97  1.84  1.72  0.882     0     0     0   0         0   </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: UPN &lt;dbl&gt;, BNG &lt;dbl&gt;, CCa &lt;dbl&gt;, SALF &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># i 7 more variables: UPN &lt;dbl&gt;, BNG &lt;dbl&gt;, CCa &lt;dbl&gt;, SALF &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Podemos &lt;dbl&gt;, OTBL &lt;dbl&gt;, ABNL &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">

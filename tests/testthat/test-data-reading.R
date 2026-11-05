@@ -98,7 +98,7 @@ test_that("load_electoral_data validates required sheets", {
     # Test the validation logic for required sheets
     required_sheets <- c(
         "partidos", "mt_simplificada", "patrones",
-        "anteriores_elecciones", "n_diputados", "retoques"
+        "anteriores_elecciones", "n_diputados"
     )
 
     available_sheets <- c("partidos", "mt_simplificada", "patrones", "anteriores_elecciones")
@@ -106,7 +106,43 @@ test_that("load_electoral_data validates required sheets", {
 
     expect_true(length(missing_sheets) > 0)
     expect_true("n_diputados" %in% missing_sheets)
-    expect_true("retoques" %in% missing_sheets)
+    expect_false("retoques" %in% required_sheets)
+    expect_false("small_parties" %in% required_sheets)
+})
+
+test_that("electoral data loaders allow optional sheets to be absent", {
+    input_path <- tempfile(fileext = ".xlsx")
+    wb <- openxlsx::createWorkbook()
+
+    openxlsx::addWorksheet(wb, "partidos")
+    openxlsx::writeData(wb, "partidos", data.frame(
+        recuerdo = "PSOE",
+        idv = "PSOE"
+    ))
+    openxlsx::addWorksheet(wb, "patrones")
+    openxlsx::writeData(wb, "patrones", data.frame(
+        codigo_provincia = "28",
+        PSOE = 100
+    ))
+    openxlsx::addWorksheet(wb, "anteriores_elecciones")
+    openxlsx::writeData(wb, "anteriores_elecciones", data.frame(
+        recuerdo = "PSOE",
+        votos_ant = 1000
+    ))
+    openxlsx::addWorksheet(wb, "n_diputados")
+    openxlsx::writeData(wb, "n_diputados", data.frame(
+        codigo_provincia = "28",
+        n_diputados = 10
+    ))
+    openxlsx::saveWorkbook(wb, input_path)
+
+    top_down <- load_electoral_data_top_down(input_path, "bootstrap")
+    bottom_up <- load_electoral_data_bottom_up(input_path, "bootstrap")
+
+    expect_null(top_down$retoques)
+    expect_null(top_down$small_parties)
+    expect_null(bottom_up$retoques)
+    expect_null(bottom_up$small_parties)
 })
 
 # Test for calculate_n function with proper structure

@@ -127,6 +127,9 @@ The simulation expects an Excel file (`.xlsx`) with these sheets:
 | `retoques` (optional) | `idv`, `votos_adicionales` | Manual vote adjustments |
 | `small_parties` (optional) | `idv`, `votos` | Small party vote estimates |
 
+The optional sheets may be omitted entirely. When present, their
+strategy-specific column schemas are validated.
+
 Use `create_input_template()` to generate a correctly formatted template with example data.
 
 ## Parameters
@@ -156,4 +159,4 @@ Key parameters for `run_vota()`:
 
 ## License
 
-MIT
+GPL (>= 3). See [LICENSE.md](LICENSE.md) for the full license text.

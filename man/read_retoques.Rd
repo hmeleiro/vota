@@ -8,16 +8,18 @@ read_retoques(path, strategy = c("top_down", "bottom_up"))
 }
 \arguments{
 \item{path}{Path to Excel file}
+
+\item{strategy}{Modeling strategy: "top_down" or "bottom_up"}
 }
 \value{
-Data frame with valid adjustments containing columns:
-idv, votos_adicionales
+Data frame with valid adjustments containing columns \code{idv} and
+\code{votos_adicionales}, or \code{NULL} if the sheet is absent.
 }
 \description{
 Reads manual adjustments from the 'retoques' sheet of the Excel file.
 }
 \details{
-The 'retoques' sheet must contain:
+The optional 'retoques' sheet, when present, must contain:
 \itemize{
 \item Column 'idv' with party names
 \item Column 'votos_adicionales' with adjustments (positive or negative)

@@ -56,15 +56,19 @@
 <dl><dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
 <dd><p>Path to Excel file</p></dd>
 
+
+<dt id="arg-strategy">strategy<a class="anchor" aria-label="anchor" href="#arg-strategy"></a></dt>
+<dd><p>Modeling strategy: "top_down" or "bottom_up"</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="valor">Valor<a class="anchor" aria-label="anchor" href="#valor"></a></h2>
-    <p>Data frame with valid adjustments containing columns:
-idv, votos_adicionales</p>
+    <p>Data frame with valid adjustments containing columns <code>idv</code> and
+<code>votos_adicionales</code>, or <code>NULL</code> if the sheet is absent.</p>
     </div>
     <div class="section level2">
     <h2 id="detalles">Detalles<a class="anchor" aria-label="anchor" href="#detalles"></a></h2>
-    <p>The 'retoques' sheet must contain:</p><ul><li><p>Column 'idv' with party names</p></li>
+    <p>The optional 'retoques' sheet, when present, must contain:</p><ul><li><p>Column 'idv' with party names</p></li>
 <li><p>Column 'votos_adicionales' with adjustments (positive or negative)</p></li>
 <li><p>Column 'codigo_provincia' if strategy is "bottom_up"</p></li>
 <li><p>Only rows with votos_adicionales != 0 and != NA are included</p></li>

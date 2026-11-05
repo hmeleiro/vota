@@ -1,5 +1,12 @@
 # vota
 
+[![Not on
+CRAN](https://img.shields.io/badge/CRAN-not%20available-red.svg)](https://cran.r-project.org)
+[![R-CMD-check](https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hmeleiro/vota/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/hmeleiro/vota/actions/workflows/pkgdown.yaml)
+[![License: GPL (\>=
+3)](https://img.shields.io/badge/License-GPL%20(%3E%3D%203)-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 [Read in English](https://vota.spainelectoralproject.com/README.md)
 
 **vota** es un paquete de R para simular resultados electorales en
@@ -138,6 +145,10 @@ La simulación espera un archivo Excel (`.xlsx`) con estas hojas:
 | `retoques` (opcional) | `idv`, `votos_adicionales` | Ajustes manuales de votos |
 | `small_parties` (opcional) | `idv`, `votos` | Estimaciones de voto de partidos pequeños |
 
+Las hojas opcionales pueden omitirse por completo. Cuando están
+presentes, se valida el esquema de columnas correspondiente a cada
+estrategia.
+
 Usa
 [`create_input_template()`](https://vota.spainelectoralproject.com/reference/create_input_template.md)
 para generar una plantilla correctamente formateada con datos de
@@ -180,4 +191,6 @@ Parámetros clave de
 
 ## Licencia
 
-MIT
+GPL (\>= 3). Consulta
+[LICENSE.md](https://vota.spainelectoralproject.com/LICENSE.md) para
+leer el texto completo de la licencia.

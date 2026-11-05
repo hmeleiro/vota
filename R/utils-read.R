@@ -54,7 +54,7 @@ validate_params <- function(survey_data = NULL,
     stop("output_file must have a .rds extension")
   }
 
-  match.arg(uncertainty_method)
+  uncertainty_method <- match.arg(uncertainty_method)
   match.arg(strategy)
 
   if (nsims <= 0 || !is.numeric(nsims)) {
@@ -228,17 +228,17 @@ load_electoral_data_top_down <- function(input_path, uncertainty_method = c("mcm
     stop("Archivo no encontrado: ", input_path)
   }
 
-  match.arg(uncertainty_method)
+  uncertainty_method <- match.arg(uncertainty_method)
 
   if (uncertainty_method == "mcmc") {
     required_sheets <- c(
       "partidos", "mt_simplificada", "patrones",
-      "anteriores_elecciones", "n_diputados", "retoques"
+      "anteriores_elecciones", "n_diputados"
     )
   } else {
     required_sheets <- c(
       "partidos", "patrones",
-      "anteriores_elecciones", "n_diputados", "retoques"
+      "anteriores_elecciones", "n_diputados"
     )
   }
 
@@ -296,7 +296,7 @@ load_electoral_data_bottom_up <- function(input_path, uncertainty_method) {
   # Verificar hojas requeridas
   required_sheets <- c(
     "partidos", "anteriores_elecciones",
-    "n_diputados", "retoques"
+    "n_diputados"
   )
 
   available_sheets <- readxl::excel_sheets(input_path)
@@ -444,12 +444,13 @@ read_patrones <- function(path) {
 #' Reads manual adjustments from the 'retoques' sheet of the Excel file.
 #'
 #' @param path Path to Excel file
+#' @param strategy Modeling strategy: "top_down" or "bottom_up"
 #'
-#' @return Data frame with valid adjustments containing columns:
-#'   idv, votos_adicionales
+#' @return Data frame with valid adjustments containing columns `idv` and
+#'   `votos_adicionales`, or `NULL` if the sheet is absent.
 #'
 #' @details
-#' The 'retoques' sheet must contain:
+#' The optional 'retoques' sheet, when present, must contain:
 #' - Column 'idv' with party names
 #' - Column 'votos_adicionales' with adjustments (positive or negative)
 #' - Column 'codigo_provincia' if strategy is "bottom_up"
@@ -457,7 +458,11 @@ read_patrones <- function(path) {
 #'
 #' @keywords internal
 read_retoques <- function(path, strategy = c("top_down", "bottom_up")) {
-  match.arg(strategy)
+  strategy <- match.arg(strategy)
+
+  if (!"retoques" %in% readxl::excel_sheets(path)) {
+    return(NULL)
+  }
 
   if (strategy == "bottom_up") {
     col_types <- c("text", "text", "numeric")
@@ -488,11 +493,12 @@ read_retoques <- function(path, strategy = c("top_down", "bottom_up")) {
 #' @param path Path to Excel file
 #' @param strategy Modeling strategy: "top_down" or "bottom_up"
 #'
-#' @return Data frame with valid small parties containing columns:
-#'  idv, votos (and codigo_provincia if strategy is "bottom_up")
+#' @return Data frame with valid small parties containing columns `idv` and
+#'   `votos` (and `codigo_provincia` if strategy is "bottom_up"), or `NULL` if
+#'   the sheet is absent.
 #'
 #' @details
-#' The 'small_parties' sheet must contain:
+#' The optional 'small_parties' sheet, when present, must contain:
 #' - Column 'idv' with party codes
 #' - Column 'votos' with vote estimates
 #' - Column 'codigo_provincia' if strategy is "bottom_up"
@@ -501,7 +507,11 @@ read_retoques <- function(path, strategy = c("top_down", "bottom_up")) {
 #'
 #' @keywords internal
 read_small_parties <- function(path, strategy = c("top_down", "bottom_up")) {
-  match.arg(strategy)
+  strategy <- match.arg(strategy)
+
+  if (!"small_parties" %in% readxl::excel_sheets(path)) {
+    return(NULL)
+  }
 
   if (strategy == "bottom_up") {
     col_types <- c("text", "text", "numeric")
@@ -798,6 +808,10 @@ check_nseats <- function(n_seats, patrones, strategy = "top_down") {
 #' @return Invisible(TRUE) si es valida, o error si no
 #' @keywords internal
 check_retoques <- function(retoques, idv_lvls) {
+  if (is.null(retoques)) {
+    return(invisible(TRUE))
+  }
+
   idv_retoques <- retoques$idv
   if (!all(idv_retoques %in% idv_lvls)) {
     stop(
@@ -818,6 +832,10 @@ check_retoques <- function(retoques, idv_lvls) {
 #' @return Invisible(TRUE) si es valida, o error si no
 #' @keywords internal
 check_small_parties <- function(small_parties, idv_lvls) {
+  if (is.null(small_parties)) {
+    return(invisible(TRUE))
+  }
+
   idv_small_parties <- small_parties$idv
   if (!all(idv_small_parties %in% idv_lvls)) {
     stop(

@@ -41,7 +41,7 @@ con el porcentaje de transferencia entre ambos.
 
 data(mt)
 head(mt)
-#> # A tibble: 6 × 8
+#> # A tibble: 6 x 8
 #>   idv       PSOE     PP    Vox  Sumar  OTBL   ABNL `<18`
 #>   <chr>    <dbl>  <dbl>  <dbl>  <dbl> <dbl>  <dbl> <dbl>
 #> 1 PSOE    67.7    0.898  0     11.4    4.95 10.4   17.2 
@@ -61,7 +61,7 @@ los ajustes demográficos y la redistribución de votantes.
 
 data(votos_23J)
 votos_23J
-#> # A tibble: 6 × 2
+#> # A tibble: 6 x 2
 #>   recuerdo votos_ant
 #>   <chr>        <dbl>
 #> 1 PSOE       7760970
@@ -81,7 +81,7 @@ estimaciones nacionales al nivel provincial.
 
 data(patrones_23J)
 head(patrones_23J)
-#> # A tibble: 6 × 17
+#> # A tibble: 6 x 17
 #>   codigo_provincia  PSOE    PP   Vox Sumar   ERC Junts   CUP   PNV `EH Bildu`
 #>   <chr>            <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>      <dbl>
 #> 1 01               0.599 0.373 0.210 0.710     0     0     0  10.1       9.85
@@ -90,7 +90,7 @@ head(patrones_23J)
 #> 4 04               1.19  1.63  2.19  0.701     0     0     0   0         0   
 #> 5 05               0.341 0.524 0.484 0.164     0     0     0   0         0   
 #> 6 06               1.97  1.84  1.72  0.882     0     0     0   0         0   
-#> # ℹ 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
+#> # i 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
 #> #   Podemos <dbl>, OTBL <dbl>, ABNL <dbl>
 ```
 
@@ -103,7 +103,7 @@ circunscripciones electorales de España.
 
 data(n_seats)
 head(n_seats)
-#> # A tibble: 6 × 2
+#> # A tibble: 6 x 2
 #>   codigo_provincia n_diputados
 #>   <chr>                  <dbl>
 #> 1 01                         4
@@ -123,7 +123,7 @@ específicos basándose en conocimiento externo.
 
 data(retoques)
 retoques
-#> # A tibble: 2 × 2
+#> # A tibble: 2 x 2
 #>   idv   votos_adicionales
 #>   <chr>             <dbl>
 #> 1 Vox             -230000
@@ -139,7 +139,7 @@ matriz de transferencia pero relevantes para el resultado global.
 
 data(small_parties)
 small_parties
-#> # A tibble: 3 × 2
+#> # A tibble: 3 x 2
 #>   idv    votos
 #>   <chr>  <dbl>
 #> 1 BNG   152327

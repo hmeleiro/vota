@@ -39,7 +39,7 @@ partido a otro. Las categorías especiales incluyen:
 
 data(mt)
 str(mt)
-#> tibble [15 × 8] (S3: tbl_df/tbl/data.frame)
+#> tibble [15 x 8] (S3: tbl_df/tbl/data.frame)
 #>  $ idv  : chr [1:15] "PSOE" "PP" "Vox" "Sumar" ...
 #>  $ PSOE : num [1:15] 67.74 2.57 1.28 2.81 1.22 ...
 #>  $ PP   : num [1:15] 0.898 68.754 12.677 0 0 ...
@@ -149,21 +149,24 @@ Las estimaciones nacionales se proyectan a provincias usando la función
 
 1.  Los **patrones históricos** de `patrones_23J` definen la
     distribución provincial esperada de cada partido
-2.  La **simulación Dirichlet** añade variabilidad: para cada partido,
-    las cuotas provinciales se extraen de una distribución Dirichlet
-    centrada en el patrón histórico, con parámetro de concentración
-    `tau`
+2.  La **simulación 0** usa esos patrones sin perturbación ni suavizado
+    y asigna a cada provincia el valor esperado. Por tanto, constituye
+    la proyección puntual completamente determinista
+3.  Para las simulaciones `sim > 0`, la **simulación Dirichlet** añade
+    variabilidad: para cada partido, las cuotas provinciales se extraen
+    de una distribución Dirichlet centrada en el patrón histórico, con
+    parámetro de concentración `tau`
     - Mayor `tau` (p.ej., 500) = menos variabilidad provincial
     - Menor `tau` (p.ej., 100) = más variabilidad provincial
-3.  La **asignación multinomial** distribuye los votos nacionales
-    totales entre las celdas provincia-partido
+4.  La **asignación multinomial** distribuye los votos nacionales
+    totales entre las celdas provincia-partido únicamente para `sim > 0`
 
 ``` r
 
 data(patrones_23J)
 # Patrones provinciales: cuota histórica de voto de cada partido por provincia
 head(patrones_23J)
-#> # A tibble: 6 × 17
+#> # A tibble: 6 x 17
 #>   codigo_provincia  PSOE    PP   Vox Sumar   ERC Junts   CUP   PNV `EH Bildu`
 #>   <chr>            <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>      <dbl>
 #> 1 01               0.599 0.373 0.210 0.710     0     0     0  10.1       9.85
@@ -172,7 +175,7 @@ head(patrones_23J)
 #> 4 04               1.19  1.63  2.19  0.701     0     0     0   0         0   
 #> 5 05               0.341 0.524 0.484 0.164     0     0     0   0         0   
 #> 6 06               1.97  1.84  1.72  0.882     0     0     0   0         0   
-#> # ℹ 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
+#> # i 7 more variables: UPN <dbl>, BNG <dbl>, CCa <dbl>, SALF <dbl>,
 #> #   Podemos <dbl>, OTBL <dbl>, ABNL <dbl>
 ```
 

@@ -15,8 +15,8 @@ You can install the development version from GitHub:
 
 ``` r
 
-# install.packages("devtools")
-devtools::install_github("hmeleiro/vota")
+# install.packages("pak")
+pak::pak("hmeleiro/vota")
 ```
 
 ## Overview
@@ -138,6 +138,9 @@ The simulation expects an Excel file (`.xlsx`) with these sheets:
 | `retoques` (optional) | `idv`, `votos_adicionales` | Manual vote adjustments |
 | `small_parties` (optional) | `idv`, `votos` | Small party vote estimates |
 
+The optional sheets may be omitted entirely. When present, their
+strategy-specific column schemas are validated.
+
 Use
 [`create_input_template()`](https://vota.spainelectoralproject.com/reference/create_input_template.md)
 to generate a correctly formatted template with example data.
@@ -179,7 +182,9 @@ Key parameters for
 
 ## License
 
-MIT
+GPL (\>= 3). See
+[LICENSE.md](https://vota.spainelectoralproject.com/LICENSE.md) for the
+full license text.
 
 # Índice del paquete
 
@@ -203,7 +208,7 @@ Funciones de simulación y muestreo.
 - [`simulate_mt()`](https://vota.spainelectoralproject.com/reference/simulate_mt.md)
   : Simulaciones Monte Carlo de Matrices de Transferencia
 - [`simulate_prov_votes()`](https://vota.spainelectoralproject.com/reference/simulate_prov_votes.md)
-  : Simulaciones Monte Carlo de matrices de provincia x partido
+  : Proyeccion de matrices de provincia x partido
 - [`draw_mt()`](https://vota.spainelectoralproject.com/reference/draw_mt.md)
   : Generate transfer matrix simulations
 
@@ -221,7 +226,7 @@ Asignación de escaños y agregación.
 - [`aggregate_results()`](https://vota.spainelectoralproject.com/reference/aggregate_results.md)
   : Agregar Resultados Nacionales desede Simulaciones Provinciales
 - [`calculate_n()`](https://vota.spainelectoralproject.com/reference/calculate_n.md)
-  : Calcular Tamanos de Muestra de MT
+  : Calcular Tamaños de Muestra de MT
 
 ## Datos de entrada
 

@@ -90,8 +90,8 @@ simulación mínima usando los datasets incluidos en el paquete.</p>
 <h2 id="instalación">Instalación<a class="anchor" aria-label="anchor" href="#instalaci%C3%B3n"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Instalar desde GitHub</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install-deprecated.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"hmeleiro/vota"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"hmeleiro/vota"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://vota.spainelectoralproject.com/">vota</a></span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -112,7 +112,7 @@ ambos.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">mt</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mt</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 8</span></span></span>
 <span><span class="co">#&gt;   idv       PSOE     PP    Vox  Sumar  OTBL   ABNL `&lt;18`</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PSOE    67.7    0.898  0     11.4    4.95 10.4   17.2 </span></span>
@@ -130,7 +130,7 @@ para los ajustes demográficos y la redistribución de votantes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">votos_23J</span><span class="op">)</span></span>
 <span><span class="va">votos_23J</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 2</span></span></span>
 <span><span class="co">#&gt;   recuerdo votos_ant</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> PSOE       7<span style="text-decoration: underline;">760</span>970</span></span>
@@ -148,7 +148,7 @@ proyectar estimaciones nacionales al nivel provincial.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">patrones_23J</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">patrones_23J</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 17</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 17</span></span></span>
 <span><span class="co">#&gt;   codigo_provincia  PSOE    PP   Vox Sumar   ERC Junts   CUP   PNV `EH Bildu`</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01               0.599 0.373 0.210 0.710     0     0     0  10.1       9.85</span></span>
@@ -157,7 +157,7 @@ proyectar estimaciones nacionales al nivel provincial.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 04               1.19  1.63  2.19  0.701     0     0     0   0         0   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 05               0.341 0.524 0.484 0.164     0     0     0   0         0   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 06               1.97  1.84  1.72  0.882     0     0     0   0         0   </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: UPN &lt;dbl&gt;, BNG &lt;dbl&gt;, CCa &lt;dbl&gt;, SALF &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># i 7 more variables: UPN &lt;dbl&gt;, BNG &lt;dbl&gt;, CCa &lt;dbl&gt;, SALF &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   Podemos &lt;dbl&gt;, OTBL &lt;dbl&gt;, ABNL &lt;dbl&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -168,7 +168,7 @@ circunscripciones electorales de España.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">n_seats</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">n_seats</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 x 2</span></span></span>
 <span><span class="co">#&gt;   codigo_provincia n_diputados</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 01                         4</span></span>
@@ -186,7 +186,7 @@ específicos basándose en conocimiento externo.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">retoques</span><span class="op">)</span></span>
 <span><span class="va">retoques</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 x 2</span></span></span>
 <span><span class="co">#&gt;   idv   votos_adicionales</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Vox             -<span style="color: #BB0000; text-decoration: underline;">230</span><span style="color: #BB0000;">000</span></span></span>
@@ -200,7 +200,7 @@ la matriz de transferencia pero relevantes para el resultado global.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">small_parties</span><span class="op">)</span></span>
 <span><span class="va">small_parties</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 x 2</span></span></span>
 <span><span class="co">#&gt;   idv    votos</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> BNG   <span style="text-decoration: underline;">152</span>327</span></span>

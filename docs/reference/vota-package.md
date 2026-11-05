@@ -109,6 +109,12 @@ The package requires an Excel file with specific sheets:
 
 - **small_parties**: Small parties data (optional)
 
+## Ver también
+
+Useful links:
+
+- <https://vota.spainelectoralproject.com/>
+
 ## Autor-a
 
-**Maintainer**: HÃ©ctor Meleiro <hmeleiros@gmail.com>
+**Maintainer**: H\<U+00E9\>ctor Meleiro <hmeleiros@gmail.com>

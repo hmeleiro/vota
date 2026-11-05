@@ -20,7 +20,7 @@ Funciones de simulación y muestreo.
 - [`simulate_mt()`](https://vota.spainelectoralproject.com/reference/simulate_mt.md)
   : Simulaciones Monte Carlo de Matrices de Transferencia
 - [`simulate_prov_votes()`](https://vota.spainelectoralproject.com/reference/simulate_prov_votes.md)
-  : Simulaciones Monte Carlo de matrices de provincia x partido
+  : Proyeccion de matrices de provincia x partido
 - [`draw_mt()`](https://vota.spainelectoralproject.com/reference/draw_mt.md)
   : Generate transfer matrix simulations
 
@@ -38,7 +38,7 @@ Asignación de escaños y agregación.
 - [`aggregate_results()`](https://vota.spainelectoralproject.com/reference/aggregate_results.md)
   : Agregar Resultados Nacionales desede Simulaciones Provinciales
 - [`calculate_n()`](https://vota.spainelectoralproject.com/reference/calculate_n.md)
-  : Calcular Tamanos de Muestra de MT
+  : Calcular Tamaños de Muestra de MT
 
 ## Datos de entrada
 

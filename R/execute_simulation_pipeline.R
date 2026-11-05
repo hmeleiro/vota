@@ -107,9 +107,12 @@ execute_simulation_pipeline <- function(data, retoques, small_parties, votos_ant
   if (verbose) message(emoji(0x1f4be), " Aggregating and exporting results...")
   participacion_media <-
     votos_provincias_sims %>%
+    { if (anyNA(.$votos_salida) || any(!is.finite(.$votos_salida))) {
+        stop("Projection produced NA or non-finite votes")
+      }; . } %>%
     mutate(participa = ifelse(partido == "ABNL", F, T)) %>%
     group_by(sim, participa) %>%
-    summarise(votos = sum(votos_salida, na.rm = T), .groups = "drop_last") %>%
+    summarise(votos = sum(votos_salida), .groups = "drop_last") %>%
     mutate(pct = round(votos / sum(votos) * 100, 2)) %>%
     group_by(participa) %>%
     summarise(participacion = round(mean(pct), 1)) %>%

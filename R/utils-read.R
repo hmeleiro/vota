@@ -395,6 +395,23 @@ read_mt <- function(path, recuerdo_lvls, idv_lvls) {
     }
   }
 
+  observed_idv <- unique(as.character(mt$idv[!mt$idv %in% c("N", "n")]))
+  observed_recuerdo <- setdiff(names(mt)[-1], c("Total", "NS/NC", "NSNC"))
+  if (anyNA(observed_idv) || anyNA(observed_recuerdo)) {
+    stop("La hoja 'mt_simplificada' contiene valores NA en idv o recuerdo")
+  }
+
+  unexpected_idv <- setdiff(observed_idv, unique(c(idv_lvls, "Indecisos")))
+  unexpected_recuerdo <- setdiff(observed_recuerdo, recuerdo_lvls)
+  if (length(unexpected_idv) > 0) {
+    stop("Hay idv en 'mt_simplificada' que no estan en la hoja 'partidos': ",
+         paste(unexpected_idv, collapse = ", "))
+  }
+  if (length(unexpected_recuerdo) > 0) {
+    stop("Hay recuerdo en 'mt_simplificada' que no estan en la hoja 'partidos': ",
+         paste(unexpected_recuerdo, collapse = ", "))
+  }
+
   mt <- calculate_n(mt) %>%
     mutate(
       recuerdo = factor(recuerdo, levels = recuerdo_lvls),
@@ -670,7 +687,11 @@ check_mt <- function(mt, recuerdo_lvls, idv_lvls) {
   if (!all(MUST_VALUES %in% recuerdo_lvls)) {
     recuerdo_lvls <- c(recuerdo_lvls, setdiff(MUST_VALUES, recuerdo_lvls))
   }
-  check_factor_lvls(recuerdo_values, recuerdo_lvls, idv_values, idv_lvls)
+  check_factor_lvls(
+    recuerdo_values, recuerdo_lvls, idv_values, idv_lvls,
+    recuerdo_allowed_lvls = unique(c(recuerdo_lvls, MUST_VALUES)),
+    idv_allowed_lvls = unique(c(idv_lvls, "Indecisos"))
+  )
 }
 
 #' Validate District Patterns
@@ -684,7 +705,11 @@ check_mt <- function(mt, recuerdo_lvls, idv_lvls) {
 #' @keywords internal
 check_patrones <- function(patrones, idv_lvls) {
   idv_lvls <- idv_lvls[!idv_lvls %in% c("ABNL", "Indecisos")]
-  check_factor_lvls(idv_var = patrones$idv, idv_lvls = idv_lvls)
+  check_factor_lvls(
+    idv_var = patrones$idv,
+    idv_lvls = idv_lvls,
+    idv_allowed_lvls = unique(c(idv_lvls, "ABNL", "Indecisos"))
+  )
 }
 
 #' Validate Previous Election Data
@@ -728,13 +753,20 @@ check_votos_ant <- function(votos_ant, recuerdo_lvls) {
 #' @param recuerdo_lvls Vector con niveles validos de recuerdo (opcional)
 #' @param idv_var Vector con valores observados de IDV (opcional)
 #' @param idv_lvls Vector con niveles validos de IDV (opcional)
+#' @param recuerdo_allowed_lvls Niveles de recuerdo permitidos además de los requeridos (opcional)
+#' @param idv_allowed_lvls Niveles de IDV permitidos además de los requeridos (opcional)
 #'
 #' @return Invisible(TRUE) si es valida, o error si hay valores no previstos
 #' @keywords internal
 check_factor_lvls <- function(recuerdo_var = NULL, recuerdo_lvls = NULL,
-                              idv_var = NULL, idv_lvls = NULL) {
+                              idv_var = NULL, idv_lvls = NULL,
+                              recuerdo_allowed_lvls = recuerdo_lvls,
+                              idv_allowed_lvls = idv_lvls) {
   if (!is.null(recuerdo_var)) {
-    recuerdo_var <- unique(recuerdo_var)
+    recuerdo_var <- unique(as.character(recuerdo_var))
+    if (anyNA(recuerdo_var)) {
+      stop("Hay valores NA en recuerdo")
+    }
     # Check para que la recodificacion coincida con los levels previstos
     if (length(setdiff(recuerdo_lvls, recuerdo_var)) > 0) {
       stop(
@@ -742,14 +774,25 @@ check_factor_lvls <- function(recuerdo_var = NULL, recuerdo_lvls = NULL,
         paste(setdiff(recuerdo_lvls, recuerdo_var), collapse = ", ")
       )
     }
+    unexpected <- setdiff(recuerdo_var, recuerdo_allowed_lvls)
+    if (length(unexpected) > 0) {
+      stop("Hay valores de recuerdo no declarados: ", paste(unexpected, collapse = ", "))
+    }
   }
   if (!is.null(idv_var)) {
-    idv_var <- unique(idv_var)
+    idv_var <- unique(as.character(idv_var))
+    if (anyNA(idv_var)) {
+      stop("Hay valores NA en idv")
+    }
     if (length(setdiff(idv_lvls, idv_var)) > 0) {
       stop(
         "Hay niveles de idv no previstos: ",
         paste(setdiff(idv_lvls, idv_var), collapse = ", ")
       )
+    }
+    unexpected <- setdiff(idv_var, idv_allowed_lvls)
+    if (length(unexpected) > 0) {
+      stop("Hay valores de idv no declarados: ", paste(unexpected, collapse = ", "))
     }
   }
 }

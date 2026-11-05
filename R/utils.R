@@ -12,6 +12,16 @@
 #' @keywords internal
 mt_correction <- function(mt_simplificada, factor_correccion_otbl,
                           factor_correccion_abstencion, factor_correccion_jovenes) {
+  if (!is.data.frame(mt_simplificada) ||
+      !all(c("recuerdo", "idv", "transfer") %in% names(mt_simplificada))) {
+    stop("mt_simplificada must have columns recuerdo, idv and transfer")
+  }
+  if (anyNA(mt_simplificada$recuerdo) || anyNA(mt_simplificada$idv) ||
+      anyNA(mt_simplificada$transfer) ||
+      any(!is.finite(mt_simplificada$transfer))) {
+    stop("mt_simplificada cannot contain NA or non-finite values in recuerdo, idv or transfer")
+  }
+
   recuerdo <- unique(mt_simplificada$recuerdo)
   idv <- unique(mt_simplificada$idv)
 
@@ -206,7 +216,7 @@ calculate_n <- function(mt) {
   if (!is.data.frame(mt)) {
     stop("mt must be a data.frame")
   }
-  rm_cols <- c("Total", "NS/NC")
+  rm_cols <- c("Total", "NS/NC", "NSNC")
   rm_rows <- c("N", "n")
 
   n <-

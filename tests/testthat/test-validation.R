@@ -196,3 +196,20 @@ test_that("check_factor_lvls fails with unexpected levels", {
         "Hay niveles de idv no previstos"
     )
 })
+
+test_that("check_factor_lvls rejects undeclared values and NA", {
+  expect_error(
+    check_factor_lvls(
+      idv_var = c("PSOE", "PP", "AA"),
+      idv_lvls = c("PSOE", "PP")
+    ),
+    "Hay valores de idv no declarados.*AA"
+  )
+  expect_error(
+    check_factor_lvls(
+      idv_var = c("PSOE", NA_character_),
+      idv_lvls = "PSOE"
+    ),
+    "valores NA en idv"
+  )
+})

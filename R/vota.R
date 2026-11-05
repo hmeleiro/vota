@@ -46,6 +46,14 @@ vota <- function(mt_simplificada,
   if (!is.data.frame(votos_ant) || !"votos_ant" %in% colnames(votos_ant)) {
     stop("votos_ant must be a data.frame with column 'votos_ant'")
   }
+  if (anyNA(mt_simplificada$recuerdo) || anyNA(mt_simplificada$idv) ||
+      anyNA(mt_simplificada$transfer) ||
+      any(!is.finite(mt_simplificada$transfer))) {
+    stop("mt_simplificada cannot contain NA or non-finite values in recuerdo, idv or transfer")
+  }
+  if (anyNA(votos_ant$votos_ant) || any(!is.finite(votos_ant$votos_ant))) {
+    stop("votos_ant cannot contain NA or non-finite values")
+  }
 
   mt_corregida <- mt_correction(
     mt_simplificada, factor_correccion_otbl,
@@ -66,8 +74,12 @@ vota <- function(mt_simplificada,
   mt_electores <-
     mt_corregida %>%
     left_join(votos_ant_corregido, by = join_by(recuerdo)) %>%
-    mutate(electores = votos_ant * transfer) %>%
+    mutate(votos_ant = coalesce(votos_ant, 0), electores = votos_ant * transfer) %>%
     select(recuerdo, idv, electores)
+
+  if (anyNA(mt_electores$electores) || any(!is.finite(mt_electores$electores))) {
+    stop("Could not calculate finite electors for every transfer-matrix cell")
+  }
 
   indecisos <-
     mt_electores %>%
@@ -80,12 +92,13 @@ vota <- function(mt_simplificada,
       left_join(indecisos, by = join_by(recuerdo)) %>%
       group_by(recuerdo) %>%
       mutate(
-        asignacion = indecisos * electores / sum(electores, na.rm = T),
+        indecisos = coalesce(indecisos, 0),
+        asignacion = indecisos * electores / sum(electores),
         idv2 = if_else(idv == "Indecisos", "ABNL", idv)
       ) %>%
       group_by(recuerdo, idv2) %>%
       mutate(
-        asignacion = sum(asignacion, na.rm = T),
+        asignacion = sum(asignacion),
         electores = electores + asignacion
       ) %>%
       filter(idv != "Indecisos") %>%
@@ -95,7 +108,7 @@ vota <- function(mt_simplificada,
     estimacion_previa <-
       mt_electores %>%
       group_by(idv) %>%
-      summarise(votos = sum(electores, na.rm = T))
+      summarise(votos = sum(electores))
   } else {
     estimacion_previa <-
       mt_electores %>%

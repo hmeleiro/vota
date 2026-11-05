@@ -96,6 +96,20 @@ test_that("vota algorithm processes transfer matrix correctly", {
     expect_true("idv" %in% colnames(result$estimacion))
     expect_true("votos" %in% colnames(result$estimacion))
     expect_true(nrow(result$estimacion) > 0) # Should have some results
+    expect_equal(
+        sum(result$estimacion$votos),
+        sum(result$estimacion$votos, na.rm = TRUE)
+    )
+})
+
+test_that("mt_correction preserves valid transfer columns without NA", {
+  corrected <- mt_correction(create_test_mt(), 1, 1, 1)
+  expect_false(anyNA(corrected$transfer))
+  sums <- corrected %>%
+    dplyr::filter(recuerdo %in% c("ABNL", "<18")) %>%
+    dplyr::group_by(recuerdo) %>%
+    dplyr::summarise(total = sum(transfer), .groups = "drop")
+  expect_equal(sums$total, c(1, 1))
 })
 
 test_that("vota redistributes undecided voters within each recall group", {

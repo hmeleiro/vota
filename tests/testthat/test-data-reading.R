@@ -145,6 +145,48 @@ test_that("electoral data loaders allow optional sheets to be absent", {
     expect_null(bottom_up$small_parties)
 })
 
+test_that("read_mt rejects party codes absent from partidos", {
+  input_path <- tempfile(fileext = ".xlsx")
+  wb <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(wb, "mt_simplificada")
+  openxlsx::writeData(wb, "mt_simplificada", data.frame(
+    idv = c("N", "PSOE", "AA"),
+    PSOE = c(100, 50, 50),
+    ABNL = c(100, 50, 50),
+    OTBL = c(100, 50, 50),
+    `<18` = c(100, 50, 50)
+  ))
+  openxlsx::saveWorkbook(wb, input_path, overwrite = TRUE)
+
+  expect_error(
+    read_mt(input_path, recuerdo_lvls = c("PSOE", "ABNL", "OTBL", "<18"),
+             idv_lvls = c("PSOE", "ABNL", "OTBL")),
+    "idv en 'mt_simplificada'.*AA"
+  )
+})
+
+test_that("read_mt ignores the NSNC auxiliary column", {
+  input_path <- tempfile(fileext = ".xlsx")
+  wb <- openxlsx::createWorkbook()
+  openxlsx::addWorksheet(wb, "mt_simplificada")
+  openxlsx::writeData(wb, "mt_simplificada", data.frame(
+    idv = c("N", "PSOE"),
+    PSOE = c(100, 100),
+    ABNL = c(100, 100),
+    OTBL = c(100, 100),
+    `<18` = c(100, 100),
+    NSNC = c(100, 100)
+  ))
+  openxlsx::saveWorkbook(wb, input_path, overwrite = TRUE)
+
+  result <- read_mt(
+    input_path,
+    recuerdo_lvls = c("PSOE", "ABNL", "OTBL", "X.18"),
+    idv_lvls = c("PSOE", "ABNL", "OTBL")
+  )
+  expect_false("NSNC" %in% unique(as.character(result$recuerdo)))
+})
+
 # Test for calculate_n function with proper structure
 test_that("calculate_n validates input structure", {
     # Test with non-data.frame input

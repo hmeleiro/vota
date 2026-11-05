@@ -8,7 +8,9 @@ check_factor_lvls(
   recuerdo_var = NULL,
   recuerdo_lvls = NULL,
   idv_var = NULL,
-  idv_lvls = NULL
+  idv_lvls = NULL,
+  recuerdo_allowed_lvls = recuerdo_lvls,
+  idv_allowed_lvls = idv_lvls
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ check_factor_lvls(
 \item{idv_var}{Vector con valores observados de IDV (opcional)}
 
 \item{idv_lvls}{Vector con niveles validos de IDV (opcional)}
+
+\item{recuerdo_allowed_lvls}{Niveles de recuerdo permitidos además de los requeridos (opcional)}
+
+\item{idv_allowed_lvls}{Niveles de IDV permitidos además de los requeridos (opcional)}
 }
 \value{
 Invisible(TRUE) si es valida, o error si hay valores no previstos
